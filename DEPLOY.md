@@ -35,26 +35,68 @@ git push -u origin main
 Note: `db.sqlite3` (your local test data) and `media/` should NOT go to
 GitHub — create a `.gitignore` first if you haven't.
 
-## Step 3 — Host it on Render (free to start)
+## Step 3 — Host it online for FREE (about 30 minutes)
 
-1. Sign up at render.com (login with GitHub).
-2. Click **New + → Blueprint**, choose your `meiyi` repository.
-   Render reads `render.yaml` and creates the website + a Postgres database.
-3. After the first deploy, note your address, e.g. `meiyi-abcd.onrender.com`.
-4. In Render → your service → **Environment**, fix these two values to match:
-   - `ALLOWED_HOSTS` = `meiyi-abcd.onrender.com`
-   - `SITE_URL` = `https://meiyi-abcd.onrender.com`
-5. Open a Render **Shell** and run, one time:
-   ```
-   python manage.py createsuperuser
-   python manage.py seed        # demo products (optional)
-   ```
+Two free accounts, no credit card:
+**Neon** = the database (keeps your orders) · **Render** = the website.
 
-⚠️ Free plan notes:
-- The free web service sleeps after idle — first visit takes ~30s to wake.
-- Uploaded photos (media/) are wiped on each deploy on the free plan.
-  Fix: use image URLs for products, or add a Render Disk (paid),
-  or use Cloudinary later.
+Do the database FIRST, or the website has nowhere to save orders.
+
+### 3a. Free database — Neon (5 min)
+
+1. Go to https://neon.com → **Sign up with GitHub**.
+2. Create a project. Name: `meiyi`. Region: pick **Singapore**
+   (closest to Malaysia = faster).
+3. On the dashboard, find **Connection string** and click copy.
+   It looks like `postgresql://user:password@ep-xxx.aws.neon.tech/neondb?sslmode=require`
+4. Paste it in Notepad for a minute. 🔑 **It contains a password — keep it
+   private.** Never put it in GitHub, never paste it into a chat.
+
+> Why not Render's own free database? Render deletes free databases after
+> 30 days. Neon's free plan has no expiry, so your orders stay safe.
+
+### 3b. Free website — Render (10 min)
+
+1. Go to https://render.com → **Sign up with GitHub**.
+2. Click **New + → Blueprint** → choose your `online-shop` repository →
+   **Connect**. Render reads `render.yaml`.
+3. It will ask you for `DATABASE_URL` — paste the Neon string from 3a.
+4. Click **Apply / Deploy** and wait ~5 minutes (watch the build log).
+
+### 3c. Fix your address (3 min)
+
+The name `meiyi` may be taken, so your real address might be
+`meiyi-abcd.onrender.com`. Look at the top of your Render service page.
+
+In Render → your service → **Environment**, correct these two:
+- `ALLOWED_HOSTS` = `meiyi-abcd.onrender.com`  (no `https://`)
+- `SITE_URL` = `https://meiyi-abcd.onrender.com`
+
+Save — Render redeploys by itself.
+
+> If you skip this you get a **"DisallowedHost"** error page. That is normal
+> and this fixes it.
+
+### 3d. Fill the live shop (5 min)
+
+Render → your service → **Shell** tab:
+```
+python manage.py createsuperuser
+python manage.py seed        # demo products (optional)
+```
+This admin login is separate from your computer's one.
+
+Now open `https://your-address.onrender.com` — your shop is live on the
+internet. Send the link to a friend to test. 🌸
+
+⚠️ What "free" costs you:
+- The site **sleeps after 15 minutes** with no visitors. The next visitor
+  waits ~50 seconds for it to wake up. Fine for testing and first customers.
+  Render's cheapest paid plan (~USD 7/month) removes the sleeping.
+- **Uploaded photos are wiped on every deploy.** So for product images,
+  paste an image URL instead of uploading a file (a free Cloudinary or
+  Imgur link works). Fix properly later with Cloudinary.
+- Neon free: 0.5 GB storage — that is tens of thousands of orders. Plenty.
 
 ## Step 4 — 🔑 Real payments (toyyibPay)
 
