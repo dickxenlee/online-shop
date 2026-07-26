@@ -1,0 +1,28 @@
+# Render blueprint — deploys the Méiyì shop with one click ("New +" > "Blueprint").
+# After the first deploy, edit ALLOWED_HOSTS and SITE_URL to your real address.
+services:
+  - type: web
+    name: meiyi
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn meiyi.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_HOSTS
+        value: meiyi.onrender.com
+      - key: SITE_URL
+        value: https://meiyi.onrender.com
+      - key: PYTHON_VERSION
+        value: "3.11.5"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: meiyi-db
+          property: connectionString
+
+databases:
+  - name: meiyi-db
+    plan: free

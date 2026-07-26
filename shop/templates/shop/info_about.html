@@ -1,0 +1,36 @@
+{% extends "shop/base.html" %}
+
+{% block title %}About Us · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Our Story</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-10">Méiyì — 美衣, beautiful clothing</h1>
+
+  <p class="text-ink/70 leading-relaxed mb-6">Méiyì is a women's cheongsam atelier in Kuala Lumpur, Malaysia. We believe the cheongsam is not a costume for special days only — it is everyday clothing, made to move with the modern woman.</p>
+
+  <p class="text-ink/70 leading-relaxed mb-6">Every piece begins on our cutting table, where our tailors shape each panel to follow the natural line of the body. We keep the soul of the traditional <em>qipao</em> — the mandarin collar, the hand-knotted <em>pankou</em> buttons — and let go of the stiffness. The result is soft, structured, and unmistakably you.</p>
+
+  <p class="text-ink/70 leading-relaxed mb-12">From office mornings to reunion dinners, from Kuala Lumpur to Kuching — we're proud to dress Malaysian women in heritage that feels like home.</p>
+
+  <div class="grid sm:grid-cols-3 gap-6 mb-12 text-center">
+    <div class="bg-champagne/60 rounded-sm p-6">
+      <p class="font-serif text-3xl text-jade mb-1">40+</p>
+      <p class="text-[11px] tracking-wider uppercase text-ink/60">hours per gown</p>
+    </div>
+    <div class="bg-champagne/60 rounded-sm p-6">
+      <p class="font-serif text-3xl text-jade mb-1">100%</p>
+      <p class="text-[11px] tracking-wider uppercase text-ink/60">made in Malaysia</p>
+    </div>
+    <div class="bg-champagne/60 rounded-sm p-6">
+      <p class="font-serif text-3xl text-jade mb-1">XS–XL</p>
+      <p class="text-[11px] tracking-wider uppercase text-ink/60">+ made to measure</p>
+    </div>
+  </div>
+
+  <div class="bg-champagne/60 rounded-sm p-7 text-center">
+    <p class="text-ink/70 mb-4">Say hello — we reply fast on WhatsApp.</p>
+    <a href="{% url 'shop:home' %}#collections" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Shop the Collections</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Track My Order · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3 text-center">Order Status</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4 text-center">Track My Order</h1>
+  <p class="text-ink/60 text-sm text-center mb-10">Enter your order number and the email you used at checkout.</p>
+
+  {% if error %}
+  <div class="mb-6 px-5 py-3 text-sm border border-maroon/40 bg-maroon/5 text-maroon">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <input name="number" required placeholder="Order number (e.g. 12)" inputmode="numeric"
+           class="w-full border border-ink/25 bg-white px-4 py-3 focus:outline-none focus:border-jade" aria-label="Order number">
+    <input name="email" type="email" required placeholder="Email used at checkout"
+           class="w-full border border-ink/25 bg-white px-4 py-3 focus:outline-none focus:border-jade" aria-label="Email">
+    <button type="submit" class="w-full bg-jade text-champagne py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Find My Order</button>
+  </form>
+
+  <p class="text-[12px] text-ink/50 text-center mt-8">Can't find it? Message us on WhatsApp — we're happy to help.</p>
+</section>
+{% endblock %}

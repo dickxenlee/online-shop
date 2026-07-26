@@ -1,0 +1,78 @@
+<style>
+  .meiyi-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                 gap: 12px; margin-bottom: 14px; }
+  .meiyi-card { border: 1px solid var(--hairline-color); border-radius: 10px;
+                padding: 12px 14px; background: var(--darkened-bg); }
+  .meiyi-card span { color: var(--body-quiet-color); font-size: 11px;
+                     text-transform: uppercase; letter-spacing: .06em; }
+  .meiyi-card b { display: block; font-size: 20px; margin-top: 3px; }
+  .meiyi-card b a { text-decoration: none; }
+  .meiyi-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+                  margin-bottom: 22px; }
+  @media (max-width: 767px) { .meiyi-panels { grid-template-columns: 1fr; } }
+  .meiyi-panel { border: 1px solid var(--hairline-color); border-radius: 10px;
+                 padding: 12px 14px; }
+  .meiyi-panel h3 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase;
+                    letter-spacing: .06em; color: var(--body-quiet-color); }
+  .meiyi-panel table { width: 100%; border-collapse: collapse; }
+  .meiyi-panel td { padding: 4px 0; border-bottom: 1px solid var(--hairline-color);
+                    font-size: 13px; }
+  .meiyi-panel tr:last-child td { border-bottom: 0; }
+  .meiyi-num { text-align: right; white-space: nowrap; }
+  .meiyi-pill { padding: 1px 8px; border-radius: 9px; font-size: 11px; font-weight: 600; }
+</style>
+
+<div class="meiyi-cards">
+  <div class="meiyi-card"><span>Sales today</span>
+    <b>RM {{ today_sales|floatformat:2 }}</b></div>
+  <div class="meiyi-card"><span>Sales in {{ month_name }}</span>
+    <b>RM {{ month_sales|floatformat:2 }}</b></div>
+  <div class="meiyi-card"><span>To ship</span>
+    <b><a href="{% url 'admin:shop_order_changelist' %}?status__exact=paid">{{ to_ship }}</a></b></div>
+  <div class="meiyi-card"><span>Awaiting payment</span>
+    <b><a href="{% url 'admin:shop_order_changelist' %}?status__exact=pending">{{ awaiting_payment }}</a></b></div>
+  <div class="meiyi-card"><span>Reviews to approve</span>
+    <b><a href="{% url 'admin:shop_review_changelist' %}?approved__exact=0">{{ pending_reviews }}</a></b></div>
+  <div class="meiyi-card"><span>Newsletter emails</span>
+    <b><a href="{% url 'admin:shop_subscriber_changelist' %}">{{ subscribers }}</a></b></div>
+</div>
+
+<div class="meiyi-panels">
+  <div class="meiyi-panel">
+    <h3>Latest orders</h3>
+    {% if recent_orders %}
+    <table>
+      {% for o in recent_orders %}
+      <tr>
+        <td><a href="{% url 'admin:shop_order_change' o.pk %}">#{{ o.pk }}</a>
+            {{ o.full_name }}</td>
+        <td class="meiyi-num">RM {{ o.total|floatformat:2 }}</td>
+        <td class="meiyi-num">
+          {% if o.status == 'paid' %}<span class="meiyi-pill" style="background:#dcfce7;color:#15803d">Paid</span>
+          {% elif o.status == 'shipped' %}<span class="meiyi-pill" style="background:#dbeafe;color:#1d4ed8">Shipped</span>
+          {% elif o.status == 'pending' %}<span class="meiyi-pill" style="background:#fef3c7;color:#b45309">Pending</span>
+          {% else %}<span class="meiyi-pill" style="background:#e5e7eb;color:#4b5563">Cancelled</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p style="color:var(--body-quiet-color);font-size:13px">No orders yet.</p>{% endif %}
+  </div>
+
+  <div class="meiyi-panel">
+    <h3>Low stock — restock soon</h3>
+    {% if low_stock %}
+    <table>
+      {% for p in low_stock %}
+      <tr>
+        <td><a href="{% url 'admin:shop_product_change' p.pk %}">{{ p.name }}</a></td>
+        <td class="meiyi-num">
+          {% if p.stock == 0 %}<span class="meiyi-pill" style="background:#fee2e2;color:#b91c1c">SOLD OUT</span>
+          {% else %}<span class="meiyi-pill" style="background:#fef3c7;color:#b45309">{{ p.stock }} left</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p style="color:var(--body-quiet-color);font-size:13px">All products have healthy stock. 👍</p>{% endif %}
+  </div>
+</div>

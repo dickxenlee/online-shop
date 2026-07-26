@@ -1,0 +1,140 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<!-- ============ HERO (editorial) ============ -->
+<section class="relative">
+  <div class="grid lg:grid-cols-12 min-h-[90vh]">
+    <div class="lg:col-span-5 flex items-center order-2 lg:order-1 px-8 sm:px-14 lg:px-16 py-20 bg-champagne">
+      <div class="max-w-md">
+        <p class="text-[11px] tracking-luxe uppercase text-maroon mb-6">The Spring Atelier · {% now "Y" %}</p>
+        <h1 class="font-serif text-5xl sm:text-6xl xl:text-7xl leading-[1.02] text-ink mb-8">
+          Timeless<br />Heritage,<br /><em class="text-jade">Modern Grace</em>
+        </h1>
+        <p class="text-ink/70 leading-relaxed mb-10">
+          Hand-finished cheongsam, reimagined for the modern woman — tailored
+          silhouettes and breathable silks, designed and made in Malaysia.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#collections" class="group inline-flex items-center gap-3 bg-jade text-champagne px-8 py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">
+            Shop the Collection <span class="transition-transform group-hover:translate-x-1">→</span>
+          </a>
+          <a href="#heritage" class="inline-flex items-center px-8 py-4 text-[13px] tracking-wider uppercase border border-ink/25 hover:border-jade hover:text-jade transition-colors">Our Story</a>
+        </div>
+      </div>
+    </div>
+    <div class="lg:col-span-7 relative order-1 lg:order-2 min-h-[55vh] lg:min-h-full overflow-hidden">
+      <img src="https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=1400&q=80"
+           alt="Model in modern emerald cheongsam" class="absolute inset-0 w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-jade/20 to-transparent"></div>
+      <span class="absolute bottom-8 right-8 text-champagne font-serif italic text-lg drop-shadow">No. 01 — The Jade Edit</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COLLECTIONS (asymmetric editorial grid) ============ -->
+<section id="collections" class="max-w-7xl mx-auto px-6 lg:px-10 py-24">
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-14 fade-up gap-4">
+    <div>
+      <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Curated Collections</p>
+      <h2 class="font-serif text-4xl sm:text-5xl text-ink">Find Your Silhouette</h2>
+    </div>
+    <p class="text-ink/60 max-w-xs text-sm leading-relaxed">Three edits, one philosophy — heritage tailoring made to move with you.</p>
+  </div>
+
+  <div class="grid md:grid-cols-12 gap-6">
+    {% for c in categories %}
+    <a href="{{ c.get_absolute_url }}"
+       class="group relative block overflow-hidden rounded-sm fade-up
+       {% cycle 'md:col-span-7 md:row-span-2' 'md:col-span-5' 'md:col-span-5' %}">
+      <img src="{{ c.cover }}" alt="{{ c.name }}"
+           class="w-full object-cover transition-transform duration-700 group-hover:scale-105 {% cycle 'h-[300px] md:h-[620px]' 'h-[300px]' 'h-[300px]' %}" />
+      <div class="absolute inset-0 bg-gradient-to-t from-ink/65 via-transparent to-transparent"></div>
+      <div class="absolute bottom-0 p-7 text-champagne">
+        <h3 class="font-serif text-2xl sm:text-3xl">{{ c.name }}</h3>
+        <p class="text-[12px] tracking-wider opacity-80 mt-1 group-hover:opacity-100 transition-opacity">{{ c.tagline }} →</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============ BEST SELLERS ============ -->
+<section id="bestsellers" class="bg-champagne/60 py-24">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="flex items-end justify-between mb-12 fade-up">
+      <div>
+        <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Loved by Many</p>
+        <h2 class="font-serif text-4xl sm:text-5xl text-ink">Best Sellers</h2>
+      </div>
+      <div class="hidden sm:flex gap-3">
+        <button id="prevBtn" aria-label="Previous" class="w-11 h-11 grid place-items-center border border-ink/25 hover:border-jade hover:text-jade transition-colors">←</button>
+        <button id="nextBtn" aria-label="Next" class="w-11 h-11 grid place-items-center border border-ink/25 hover:border-jade hover:text-jade transition-colors">→</button>
+      </div>
+    </div>
+
+    <div id="carousel" class="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 scroll-smooth">
+      {% for p in bestsellers %}
+      <div class="product-card snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[30%] group relative">
+        <div class="relative overflow-hidden rounded-sm bg-white">
+          <a href="{{ p.get_absolute_url }}" class="block">
+            <img src="{{ p.cover }}" alt="{{ p.name }}" class="img-front h-[420px] w-full object-cover" />
+            <img src="{{ p.hover }}" alt="{{ p.name }}" class="img-back absolute inset-0 h-[420px] w-full object-cover" />
+          </a>
+          {% if not p.in_stock %}<span class="absolute top-4 left-4 bg-ink/85 text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Sold Out</span>
+          {% elif p.is_bestseller %}<span class="absolute top-4 left-4 bg-jade text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Best Seller</span>{% endif %}
+          {% if p.on_sale %}<span class="absolute top-4 right-4 bg-maroon text-champagne text-[10px] tracking-wider uppercase px-3 py-1">-{{ p.discount_percent }}%</span>{% endif %}
+          {% if p.in_stock %}
+          <form method="post" action="{% url 'shop:cart_add' p.id %}" class="quick-add absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+            {% csrf_token %}
+            <button type="submit" aria-label="Add {{ p.name }} to bag" class="bg-champagne text-ink text-[12px] tracking-wider uppercase px-6 py-2.5 hover:bg-jade hover:text-champagne transition-colors">Quick Add</button>
+          </form>
+          {% endif %}
+          {% include "shop/_wish_btn.html" with p=p %}
+        </div>
+        <a href="{{ p.get_absolute_url }}" class="pt-4 flex items-start justify-between">
+          <div>
+            <h3 class="font-serif text-lg text-ink">{{ p.name }}</h3>
+            <div class="flex gap-1.5 mt-2">
+              {% for s in p.size_list %}<span class="text-[11px] text-ink/60 border border-ink/20 w-7 h-7 grid place-items-center rounded-sm">{{ s }}</span>{% endfor %}
+            </div>
+          </div>
+          <span class="font-medium text-jade whitespace-nowrap">RM {{ p.price|floatformat:2 }}</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ HERITAGE ============ -->
+<section id="heritage" class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
+  <div class="grid lg:grid-cols-2 gap-14 items-center">
+    <div class="relative fade-up">
+      <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=900&q=80"
+           alt="Artisan stitching a cheongsam" class="w-full h-[520px] object-cover rounded-sm" />
+      <div class="absolute -bottom-6 -right-6 bg-jade text-champagne p-7 hidden sm:block">
+        <p class="font-serif text-3xl">40+</p>
+        <p class="text-[11px] tracking-wider uppercase opacity-80">hours per gown</p>
+      </div>
+    </div>
+    <div class="fade-up">
+      <p class="text-[11px] tracking-luxe uppercase text-maroon mb-5">Our Heritage</p>
+      <h2 class="font-serif text-4xl sm:text-5xl leading-snug text-ink mb-7">A modern twist on a craft passed through generations.</h2>
+      <p class="text-ink/70 leading-relaxed mb-5">Every Méiyì piece begins on the cutting table of our Kuala Lumpur atelier, where master tailors shape each panel to follow the natural line of the body. We keep the soul of the traditional <em>qipao</em> — the mandarin collar, the hand-knotted <em>pankou</em> buttons — and let go of the stiffness.</p>
+      <p class="text-ink/70 leading-relaxed mb-9">The result is a cheongsam you can wear to the office, to dinner, and to reunion — soft, structured, and unmistakably you.</p>
+      <a href="#collections" class="inline-flex items-center gap-3 text-jade text-[13px] tracking-wider uppercase border-b border-jade pb-1 hover:gap-5 transition-all">Discover the Craft →</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const carousel = document.getElementById('carousel');
+  if (carousel) {
+    const step = () => { const c = carousel.querySelector('.product-card'); return c ? c.offsetWidth + 24 : 300; };
+    document.getElementById('nextBtn').onclick = () => carousel.scrollBy({left: step(), behavior:'smooth'});
+    document.getElementById('prevBtn').onclick = () => carousel.scrollBy({left:-step(), behavior:'smooth'});
+  }
+</script>
+{% endblock %}

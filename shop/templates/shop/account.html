@@ -1,0 +1,44 @@
+{% extends "shop/base.html" %}
+
+{% block title %}My Account · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-16">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">My Account</p>
+  <h1 class="font-serif text-4xl text-ink mb-2">Hello 🌸</h1>
+  <p class="text-ink/60 text-sm mb-1">{{ user.email }}</p>
+  <p class="text-ink/60 text-sm mb-10">At checkout, your delivery details fill in automatically from your latest order.</p>
+
+  <h2 class="font-serif text-2xl text-ink mb-4">My Orders</h2>
+  {% if orders %}
+  <div class="space-y-3 mb-12">
+    {% for o in orders %}
+    <a href="{% url 'shop:order_done' o.token %}" class="flex items-center justify-between gap-4 bg-champagne/60 rounded-sm px-5 py-4 hover:bg-champagne transition-colors">
+      <span class="min-w-0">
+        <span class="font-medium text-ink">#{{ o.id }}</span>
+        <span class="text-ink/50 text-sm ml-2">{{ o.created_at|date:"j M Y" }}</span>
+        <span class="block text-[12px] text-ink/50 mt-0.5 truncate">
+          {% for item in o.items.all %}{{ item.quantity }}× {{ item.name }}{% if not forloop.last %} · {% endif %}{% endfor %}
+        </span>
+      </span>
+      <span class="text-right shrink-0">
+        <span class="block text-jade font-medium">RM {{ o.total|floatformat:2 }}</span>
+        <span class="text-[11px] tracking-wider uppercase {% if o.status == 'paid' %}text-jade{% elif o.status == 'shipped' %}text-blue-700{% elif o.status == 'pending' %}text-maroon{% else %}text-ink/40{% endif %}">{{ o.get_status_display }}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-ink/60 mb-12">No orders on this account yet — <a href="{% url 'shop:home' %}#collections" class="text-jade underline">find your first piece</a>.<br>
+  <span class="text-[13px] text-ink/50">Ordered before registering? Find it via <a href="{% url 'shop:track' %}" class="underline">Track My Order</a>.</span></p>
+  {% endif %}
+
+  <div class="flex items-center gap-6">
+    <a href="{% url 'shop:wishlist' %}" class="text-sm text-jade underline">My wishlist ♡</a>
+    <form method="post" action="{% url 'shop:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="text-sm text-ink/50 underline hover:text-maroon transition-colors">Log out</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

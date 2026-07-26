@@ -1,0 +1,70 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Order Confirmed · Méiyì{% endblock %}
+
+{% block content %}
+{% include "shop/_steps.html" with active=2 %}
+<section class="max-w-2xl mx-auto px-6 py-16 text-center">
+  {% if order.status == 'pending' %}
+  <div class="w-16 h-16 mx-auto mb-7 rounded-full bg-maroon/10 text-maroon grid place-items-center text-3xl">⏳</div>
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Almost there, {{ order.full_name }}</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">Payment Pending</h1>
+  <p class="text-ink/70 mb-2">Order <span class="font-medium text-ink">#{{ order.id }}</span> is saved, but payment is not completed yet.</p>
+  {% if payments_enabled %}
+  <form method="post" action="{% url 'shop:payment_start' order.token %}" class="mb-10 mt-6">
+    {% csrf_token %}
+    <button type="submit" class="bg-jade text-champagne px-10 py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Pay Now — RM {{ order.total|floatformat:2 }}</button>
+  </form>
+  {% elif manual_payment %}
+  <div class="bg-champagne/60 rounded-sm p-6 text-left mt-6 mb-10">
+    <h2 class="font-serif text-xl text-ink mb-2">How to pay — bank transfer</h2>
+    <p class="text-ink/70 text-sm mb-4">Your pieces are reserved. Message us on WhatsApp with your order number <span class="font-medium text-ink">#{{ order.id }}</span> and we'll send you our bank details. We also emailed these steps to {{ order.email }}.</p>
+    <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi%20Meiyi!%20I%20placed%20order%20%23{{ order.id }}%20and%20would%20like%20to%20pay%20by%20bank%20transfer." target="_blank" rel="noopener" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">💬 WhatsApp Us to Pay — RM {{ order.total|floatformat:2 }}</a>
+  </div>
+  {% else %}
+  <p class="text-ink/60 text-sm mb-10">We'll contact you at {{ order.email }} to arrange payment.</p>
+  {% endif %}
+  {% elif order.status == 'cancelled' %}
+  <div class="w-16 h-16 mx-auto mb-7 rounded-full bg-ink/10 text-ink/60 grid place-items-center text-3xl">✕</div>
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Order #{{ order.id }}</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">Order Cancelled</h1>
+  <p class="text-ink/60 text-sm mb-10">This order was cancelled. Message us on WhatsApp if this is a mistake.</p>
+  {% else %}
+  <div class="w-16 h-16 mx-auto mb-7 rounded-full bg-jade/10 text-jade grid place-items-center text-3xl">✓</div>
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Thank you, {{ order.full_name }}</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">{% if order.status == 'shipped' %}Order Shipped{% else %}Order Confirmed{% endif %}</h1>
+  <p class="text-ink/70 mb-2">Your order <span class="font-medium text-ink">#{{ order.id }}</span> is {{ order.get_status_display|lower }}.</p>
+  <p class="text-ink/60 text-sm mb-10">Please save your order number <span class="text-ink font-medium">#{{ order.id }}</span>. A confirmation email was sent to {{ order.email }}. We'll ship to {{ order.get_region_display }}.</p>
+  {% endif %}
+
+  <div class="bg-champagne/60 rounded-sm p-7 text-left">
+    <h2 class="font-serif text-xl text-ink mb-4">Summary</h2>
+    <div class="space-y-3 mb-5">
+      {% for item in order.items.all %}
+      <div class="flex justify-between text-sm">
+        <span class="text-ink/80">{{ item.name }} · {{ item.size }} · ×{{ item.quantity }}</span>
+        <span class="text-ink/80">RM {{ item.line_total|floatformat:2 }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="border-t border-champagne-deep pt-4 space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-ink/70">Subtotal</span><span>RM {{ order.subtotal|floatformat:2 }}</span></div>
+      {% if order.discount %}
+      <div class="flex justify-between"><span class="text-ink/70">Discount{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}</span><span class="text-jade">− RM {{ order.discount|floatformat:2 }}</span></div>
+      {% endif %}
+      <div class="flex justify-between"><span class="text-ink/70">Shipping</span><span>{% if order.shipping %}RM {{ order.shipping|floatformat:2 }}{% else %}Free{% endif %}</span></div>
+      <div class="flex justify-between font-medium text-lg text-jade pt-2"><span>Total</span><span>RM {{ order.total|floatformat:2 }}</span></div>
+      <div class="flex justify-between text-[12px] text-ink/50 pt-1"><span>Paid via</span><span>{{ order.get_payment_method_display }}</span></div>
+    </div>
+  </div>
+
+  {% if order.status == 'pending' %}
+  <form method="post" action="{% url 'shop:order_cancel' order.token %}" class="mt-6" onsubmit="return confirm('Cancel order #{{ order.id }}? Your reserved pieces will be released.');">
+    {% csrf_token %}
+    <button type="submit" class="text-[12px] text-ink/50 underline hover:text-maroon transition-colors">Changed your mind? Cancel this order</button>
+  </form>
+  {% endif %}
+
+  <a href="{% url 'shop:home' %}" class="inline-block mt-10 bg-jade text-champagne px-8 py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Continue Shopping</a>
+</section>
+{% endblock %}

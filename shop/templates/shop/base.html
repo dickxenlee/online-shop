@@ -1,0 +1,323 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Méiyì · Women's Modern Cheongsam, Made in Malaysia{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Women's modern cheongsam, designed and tailored in Malaysia. Heritage silhouettes made for the way she lives today.{% endblock %}" />
+  <link rel="icon" type="image/svg+xml" href="{% static 'shop/favicon.svg' %}" />
+  <!-- social sharing preview (WhatsApp / Facebook) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Méiyì" />
+  <meta property="og:title" content="{% block og_title %}Méiyì · Women's Modern Cheongsam, Made in Malaysia{% endblock %}" />
+  <meta property="og:description" content="{% block og_desc %}Women's modern cheongsam, designed and tailored in Malaysia.{% endblock %}" />
+  <meta property="og:image" content="{% block og_image %}https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=1200&q=80{% endblock %}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          champagne:'#EFE6D9', 'champagne-deep':'#E3D3BD',
+          jade:'#1F4A40', 'jade-light':'#3A6B5E',
+          blush:'#E9C9C5', maroon:'#5C1F25', ink:'#262220',
+        },
+        fontFamily: { serif:['"Playfair Display"','serif'], sans:['Inter','sans-serif'] },
+      }},
+    };
+  </script>
+  <style>
+    html { scroll-behavior:smooth; }
+    body { background:#FBF8F4; color:#262220; }
+    .tracking-luxe { letter-spacing:0.25em; }
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    .product-card .img-front{opacity:1;transition:opacity .6s ease;}
+    .product-card .img-back{opacity:0;transition:opacity .6s ease;}
+    .product-card:hover .img-front{opacity:0;}
+    .product-card:hover .img-back{opacity:1;}
+    .fade-up{opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s ease;}
+    .fade-up.in{opacity:1;transform:none;}
+    .modal{opacity:0;pointer-events:none;transition:opacity .3s ease;}
+    .modal.open{opacity:1;pointer-events:auto;}
+    .modal .panel{transform:translateY(20px);transition:transform .35s ease;}
+    .modal.open .panel{transform:none;}
+    /* --- Stage 2 polish: micro-interactions --- */
+    button,[type=submit]{transition:transform .12s ease;}
+    button:active,[type=submit]:active,a.bg-jade:active{transform:scale(.97);}
+    .product-card{transition:transform .45s ease;}
+    .product-card:hover{transform:translateY(-6px);}
+    .product-card .relative{transition:box-shadow .45s ease;}
+    .product-card:hover .relative{box-shadow:0 18px 34px -18px rgba(38,34,32,.45);}
+    input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(31,74,64,.15);}
+    button:disabled{opacity:.6;cursor:default;}
+    /* smooth image fade-in */
+    img{opacity:0;transition:opacity .7s ease;}
+    img.loaded{opacity:1;}
+    /* toast + cart bump */
+    .toast-stack{position:fixed;top:20px;right:20px;z-index:60;display:flex;flex-direction:column;gap:10px;max-width:340px;}
+    .toast{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:5px;font-size:13px;box-shadow:0 12px 30px -12px rgba(38,34,32,.45);transform:translateX(140%);transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s ease;}
+    .toast.in{transform:translateX(0);}
+    .toast.out{transform:translateX(140%);opacity:0;}
+    @keyframes cartbump{0%{transform:scale(1);}40%{transform:scale(1.5);}100%{transform:scale(1);}}
+    .cart-bump{animation:cartbump .45s ease;}
+    /* accordion: hide default marker */
+    summary::-webkit-details-marker{display:none;}
+    summary{list-style:none;}
+  </style>
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="font-sans antialiased">
+
+  <div class="bg-jade text-champagne text-[11px] tracking-luxe text-center py-2 uppercase">
+    Proudly made in Malaysia · Complimentary nationwide shipping over RM {{ FREE_SHIPPING_THRESHOLD|default:350 }} · West &amp; East
+  </div>
+
+  <header class="sticky top-0 z-40 backdrop-blur bg-[#FBF8F4]/85 border-b border-champagne-deep/60">
+    <nav class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
+      <button id="menuBtn" class="md:hidden text-ink" aria-label="Menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <ul class="hidden md:flex gap-9 text-[13px] tracking-wide text-ink/80">
+        <li><a href="{% url 'shop:home' %}#collections" class="hover:text-jade transition-colors">Collections</a></li>
+        <li><a href="{% url 'shop:home' %}#bestsellers" class="hover:text-jade transition-colors">Best Sellers</a></li>
+        <li><a href="{% url 'shop:home' %}#heritage" class="hover:text-jade transition-colors">Heritage</a></li>
+      </ul>
+      <a href="{% url 'shop:home' %}" aria-label="Méiyì home" class="absolute left-1/2 -translate-x-1/2 text-center leading-none">
+        <svg width="16" height="16" viewBox="0 0 64 64" class="mx-auto mb-1" aria-hidden="true"><path d="M32 6C20 20 20 40 32 58 44 40 44 20 32 6Z" fill="#1F4A40"/><path d="M32 17C27.5 26 27.5 40 32 49" stroke="#EFE6D9" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        <span class="font-serif text-2xl tracking-[0.2em] text-jade">MÉIYÌ</span>
+        <span class="block text-[9px] tracking-[0.4em] text-ink/50 mt-0.5">WOMEN'S CHEONGSAM</span>
+      </a>
+      <div class="flex items-center gap-5 text-ink/80">
+        <button id="searchBtn" aria-label="Search" aria-expanded="false" class="hover:text-jade transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+        </button>
+        <a href="{% if user.is_authenticated %}{% url 'shop:account' %}{% else %}{% url 'shop:login' %}{% endif %}" aria-label="{% if user.is_authenticated %}My account{% else %}Log in{% endif %}" class="relative hover:text-jade transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+          {% if user.is_authenticated %}<span class="absolute -top-1 -right-1 bg-jade w-2 h-2 rounded-full"></span>{% endif %}
+        </a>
+        <a href="{% url 'shop:wishlist' %}" id="wishLink" aria-label="Wishlist" class="relative hover:text-jade transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2Z"/></svg>
+          {% if wishlist_count %}<span id="wishCount" class="absolute -top-2 -right-2 bg-jade text-champagne text-[9px] w-4 h-4 rounded-full grid place-items-center">{{ wishlist_count }}</span>{% endif %}
+        </a>
+        <a href="{% url 'shop:cart' %}" id="cartLink" aria-label="Cart" class="relative hover:text-jade transition-colors">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7h12l-1 12H6L5 7Z"/><path d="M8 7a3 3 0 0 1 6 0"/></svg>
+          {% if cart_count %}<span id="cartCount" class="absolute -top-2 -right-2 bg-maroon text-champagne text-[9px] w-4 h-4 rounded-full grid place-items-center">{{ cart_count }}</span>{% endif %}
+        </a>
+      </div>
+    </nav>
+    <!-- search bar (toggled by the magnifier icon) -->
+    <div id="searchBar" class="hidden border-t border-champagne-deep/60 bg-[#FBF8F4]">
+      <form action="{% url 'shop:search' %}" method="get" class="max-w-7xl mx-auto px-6 lg:px-10 py-3 flex gap-3">
+        <input id="searchInput" name="q" value="{{ query|default:'' }}" placeholder="Search cheongsam — e.g. jade, silk, peony…"
+               class="flex-1 border border-ink/25 bg-white px-4 py-2.5 text-sm focus:outline-none focus:border-jade" aria-label="Search products">
+        <button type="submit" class="bg-jade text-champagne px-6 text-[12px] tracking-wider uppercase hover:bg-jade-light transition-colors">Search</button>
+      </form>
+    </div>
+    <!-- mobile drawer -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-champagne-deep/60 bg-[#FBF8F4]">
+      <a href="{% url 'shop:home' %}#collections" class="block px-6 py-4 border-b border-champagne-deep/40 text-sm">Collections</a>
+      <a href="{% url 'shop:home' %}#bestsellers" class="block px-6 py-4 border-b border-champagne-deep/40 text-sm">Best Sellers</a>
+      <a href="{% url 'shop:home' %}#heritage" class="block px-6 py-4 text-sm">Heritage</a>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="toast-stack" id="toastStack">
+    {% for message in messages %}
+    <div class="toast {% if message.tags == 'success' %}toast-success bg-jade text-champagne{% elif message.tags == 'error' %}bg-maroon text-champagne{% else %}bg-ink text-champagne{% endif %}">
+      {% if message.tags == 'success' %}<span aria-hidden="true">✓</span>{% endif %}
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer class="bg-ink text-champagne/80 mt-24">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-10 text-sm">
+      <div>
+        <span class="font-serif text-xl tracking-[0.2em] text-champagne">MÉIYÌ</span>
+        <p class="mt-4 leading-relaxed text-champagne/60">Women's modern cheongsam, designed and tailored in Malaysia. Heritage silhouettes made for the way she lives today.</p>
+        <form method="post" action="{% url 'shop:newsletter' %}" class="mt-6">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-5000px" aria-hidden="true">
+          <p class="text-[11px] tracking-luxe uppercase text-champagne/70 mb-2.5">Join the list — new arrivals &amp; offers</p>
+          <div class="flex">
+            <input name="email" type="email" required placeholder="Your email"
+                   class="flex-1 min-w-0 bg-transparent border border-champagne/30 px-3.5 py-2.5 text-sm text-champagne placeholder-champagne/40 focus:outline-none focus:border-champagne" aria-label="Email for newsletter">
+            <button type="submit" class="border border-l-0 border-champagne/30 px-4 text-[11px] tracking-wider uppercase text-champagne hover:bg-champagne hover:text-ink transition-colors">Join</button>
+          </div>
+        </form>
+      </div>
+      <div>
+        <h4 class="text-champagne text-[12px] tracking-luxe uppercase mb-4">Shop</h4>
+        <ul class="space-y-2.5 text-champagne/60">
+          {% for c in categories %}<li><a href="{{ c.get_absolute_url }}" class="hover:text-champagne transition-colors">{{ c.name }}</a></li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-champagne text-[12px] tracking-luxe uppercase mb-4">Care</h4>
+        <ul class="space-y-2.5 text-champagne/60">
+          <li><a href="{% url 'shop:info_size_guide' %}" class="hover:text-champagne transition-colors">Size Guide &amp; Measurement</a></li>
+          <li><a href="{% url 'shop:info_shipping' %}" class="hover:text-champagne transition-colors">Shipping (West &amp; East)</a></li>
+          <li><a href="{% url 'shop:info_shipping' %}#returns" class="hover:text-champagne transition-colors">Returns &amp; Exchange</a></li>
+          <li><a href="{% url 'shop:track' %}" class="hover:text-champagne transition-colors">Track My Order</a></li>
+          <li><a href="{% url 'shop:info_about' %}" class="hover:text-champagne transition-colors">About Méiyì</a></li>
+          <li><a href="{% url 'shop:info_privacy' %}" class="hover:text-champagne transition-colors">Privacy Notice</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-champagne text-[12px] tracking-luxe uppercase mb-4">Secure Checkout</h4>
+        <div class="flex flex-wrap gap-2 text-[11px]">
+          <span class="border border-champagne/30 px-2.5 py-1 rounded">FPX</span>
+          <span class="border border-champagne/30 px-2.5 py-1 rounded">GrabPay</span>
+          <span class="border border-champagne/30 px-2.5 py-1 rounded">Visa</span>
+          <span class="border border-champagne/30 px-2.5 py-1 rounded">Mastercard</span>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-champagne/10 py-6 text-center text-[12px] text-champagne/40">
+      © {% now "Y" %} Méiyì · Women's Cheongsam Atelier · Kuala Lumpur, Malaysia
+    </div>
+  </footer>
+
+  <!-- WhatsApp chat button -->
+  {% if WHATSAPP_NUMBER %}
+  <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi%20M%C3%A9iy%C3%AC!%20I%27d%20like%20to%20ask%20about%20a%20cheongsam."
+     target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"
+     class="fixed bottom-20 lg:bottom-8 right-4 lg:right-6 z-40 block p-3.5 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 transition-transform">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+  </a>
+  {% endif %}
+
+  <script>
+    // mobile menu
+    const mb = document.getElementById('menuBtn');
+    if (mb) mb.onclick = () => document.getElementById('mobileMenu').classList.toggle('hidden');
+    // search bar toggle
+    const sb = document.getElementById('searchBtn');
+    if (sb) sb.onclick = () => {
+      const bar = document.getElementById('searchBar');
+      bar.classList.toggle('hidden');
+      const open = !bar.classList.contains('hidden');
+      sb.setAttribute('aria-expanded', open);
+      if (open) document.getElementById('searchInput').focus();
+    };
+    // fade-up on scroll
+    const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:0.12});
+    document.querySelectorAll('.fade-up').forEach(el=>io.observe(el));
+    // toast notifications (slide in, auto-dismiss)
+    document.querySelectorAll('#toastStack .toast').forEach((t,i)=>{
+      setTimeout(()=>t.classList.add('in'), 80 + i*120);
+      setTimeout(()=>{t.classList.remove('in');t.classList.add('out');}, 2600 + i*120);
+    });
+    // bump the cart count when something was just added
+    if (document.querySelector('#toastStack .toast-success')) {
+      const cc = document.getElementById('cartCount');
+      if (cc) cc.classList.add('cart-bump');
+    }
+    // smooth image fade-in (handles cached + broken images)
+    document.querySelectorAll('img').forEach(img=>{
+      if (img.complete) img.classList.add('loaded');
+      else { img.addEventListener('load', ()=>img.classList.add('loaded'));
+             img.addEventListener('error', ()=>img.classList.add('loaded')); }
+    });
+    // animate progress bars from 0 to their target width
+    document.querySelectorAll('[data-bar]').forEach(b=>{
+      const target = b.dataset.bar + '%';
+      b.style.width = '0%';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ b.style.width = target; }));
+    });
+    // quantity steppers (− / +) — works for any [data-qty-group]
+    document.addEventListener('click', e=>{
+      const btn = e.target.closest('[data-qty="-"],[data-qty="+"]');
+      if (!btn) return;
+      const group = btn.closest('[data-qty-group]');
+      const input = group.querySelector('input[name=quantity]');
+      const min = parseInt(input.min || '1', 10);
+      let v = parseInt(input.value, 10); if (isNaN(v)) v = min;
+      v += btn.dataset.qty === '+' ? 1 : -1;
+      if (v < min) v = min;
+      input.value = v;
+    });
+    // show a toast from JS (used by quick-add). ok=false shows an error style.
+    function showToast(msg, ok=true){
+      let stack = document.getElementById('toastStack');
+      if (!stack){ stack = document.createElement('div'); stack.id='toastStack'; stack.className='toast-stack'; document.body.appendChild(stack); }
+      const t = document.createElement('div');
+      t.className = ok ? 'toast toast-success bg-jade text-champagne' : 'toast bg-maroon text-champagne';
+      t.innerHTML = (ok ? '<span aria-hidden="true">✓</span>' : '') + '<span></span>';
+      t.lastChild.textContent = msg;
+      stack.appendChild(t);
+      setTimeout(()=>t.classList.add('in'), 50);
+      setTimeout(()=>{ t.classList.remove('in'); t.classList.add('out'); }, 2600);
+      setTimeout(()=>t.remove(), 3200);
+    }
+    // set + bump the nav cart count (creates the badge if it's not there yet)
+    function setCartCount(count){
+      const link = document.getElementById('cartLink');
+      let cc = document.getElementById('cartCount');
+      if (!cc && link){
+        cc = document.createElement('span');
+        cc.id = 'cartCount';
+        cc.className = 'absolute -top-2 -right-2 bg-maroon text-champagne text-[9px] w-4 h-4 rounded-full grid place-items-center';
+        link.appendChild(cc);
+      }
+      if (!cc) return;
+      cc.textContent = count;
+      cc.classList.remove('cart-bump'); void cc.offsetWidth; cc.classList.add('cart-bump');
+    }
+    // wishlist heart toggle (no page reload)
+    document.addEventListener('submit', e=>{
+      const f = e.target.closest('form.wish-toggle');
+      if (!f) return;
+      e.preventDefault();
+      fetch(f.action, { method:'POST', body:new FormData(f), headers:{'X-Requested-With':'XMLHttpRequest'} })
+        .then(r=>r.json())
+        .then(d=>{
+          const heart = f.querySelector('.wish-heart');
+          if (heart) heart.setAttribute('fill', d.added ? 'currentColor' : 'none');
+          const link = document.getElementById('wishLink');
+          let wc = document.getElementById('wishCount');
+          if (d.count > 0) {
+            if (!wc && link){
+              wc = document.createElement('span');
+              wc.id = 'wishCount';
+              wc.className = 'absolute -top-2 -right-2 bg-jade text-champagne text-[9px] w-4 h-4 rounded-full grid place-items-center';
+              link.appendChild(wc);
+            }
+            if (wc) wc.textContent = d.count;
+          } else if (wc) wc.remove();
+          showToast(d.added ? '♡ Saved “'+d.name+'” to your wishlist' : 'Removed “'+d.name+'” from your wishlist');
+        })
+        .catch(()=>showToast('Sorry, please try again.', false));
+    });
+    // quick-add from a product card (no page reload)
+    document.addEventListener('submit', e=>{
+      const f = e.target.closest('form.quick-add');
+      if (!f) return;
+      e.preventDefault();
+      const btn = f.querySelector('button[type=submit]');
+      if (btn && btn.disabled) return;            // block double-clicks
+      const label = btn ? btn.textContent : '';
+      if (btn){ btn.disabled = true; btn.textContent = 'Adding…'; }
+      fetch(f.action, { method:'POST', body:new FormData(f), headers:{'X-Requested-With':'XMLHttpRequest'} })
+        .then(async r=>{
+          const d = await r.json();
+          if (!r.ok) { showToast(d.error || 'Sorry, could not add.', false); return; }
+          setCartCount(d.count); showToast('Added “'+d.name+'” ('+d.size+')');
+        })
+        .catch(()=>showToast('Sorry, could not add. Please try again.', false))
+        .finally(()=>{ if(btn){ btn.disabled = false; btn.textContent = label; } });
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

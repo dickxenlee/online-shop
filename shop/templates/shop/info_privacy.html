@@ -1,0 +1,43 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Privacy Notice · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Your Data, Respected</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">Privacy Notice</h1>
+  <p class="text-ink/50 text-sm mb-10">In line with the Personal Data Protection Act 2010 (PDPA), Malaysia.</p>
+
+  <div class="space-y-8 text-ink/70 leading-relaxed">
+    <div>
+      <h2 class="font-serif text-2xl text-ink mb-3">What we collect, and why</h2>
+      <p>When you place an order we ask for your <strong class="text-ink">name, phone number, email and delivery address</strong> — only so we can prepare your order, deliver it, and contact you about it. If you join our newsletter, we keep your email to send you new arrivals and offers.</p>
+    </div>
+
+    <div>
+      <h2 class="font-serif text-2xl text-ink mb-3">What we never collect</h2>
+      <p>We never see or store your <strong class="text-ink">banking passwords or card numbers</strong>. Online payments are handled by our payment provider (toyyibPay) on their own secure pages, or arranged directly by bank transfer.</p>
+    </div>
+
+    <div>
+      <h2 class="font-serif text-2xl text-ink mb-3">Who we share it with</h2>
+      <p>Only the people needed to complete your order: our courier receives your name, phone and address for delivery, and our payment provider processes your payment. We <strong class="text-ink">never sell your data</strong> or share it for advertising.</p>
+    </div>
+
+    <div>
+      <h2 class="font-serif text-2xl text-ink mb-3">Cookies</h2>
+      <p>We use a small session cookie so your shopping bag and wishlist remember what you picked. No tracking cookies, no ad networks.</p>
+    </div>
+
+    <div>
+      <h2 class="font-serif text-2xl text-ink mb-3">Your choices</h2>
+      <p>You may ask us anytime to see, correct or delete the personal data we hold about you, or to stop newsletter emails. Just message us on WhatsApp or reply to any of our emails — we reply fast.</p>
+    </div>
+  </div>
+
+  <div class="bg-champagne/60 rounded-sm p-7 text-center mt-12">
+    <p class="text-ink/70 mb-4">Questions about your data? We're happy to help.</p>
+    <a href="https://wa.me/{{ WHATSAPP_NUMBER }}" target="_blank" rel="noopener" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Chat on WhatsApp</a>
+  </div>
+</section>
+{% endblock %}

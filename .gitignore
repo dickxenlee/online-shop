@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Local data — never push your test database or uploads
+db.sqlite3
+media/
+
+# Collected static files (rebuilt on deploy)
+staticfiles/
+
+# Personal / not part of the shop (stays on your computer only)
+CLAUDE.md
+.claude/
+bug_triage/
+quiz_9.lex
+
+# Old static mockups from before the Django version.
+# The leading "/" means ONLY these two files in the top folder —
+# the shop's own index.html / product.html templates are kept.
+/index.html
+/product.html

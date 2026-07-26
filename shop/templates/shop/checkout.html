@@ -1,0 +1,153 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Checkout · Méiyì{% endblock %}
+
+{% block content %}
+{% include "shop/_steps.html" with active=1 %}
+<section class="max-w-6xl mx-auto px-6 lg:px-10 py-12">
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-10">Checkout</h1>
+
+  <form method="post" action="{% url 'shop:checkout' %}" class="grid lg:grid-cols-3 gap-12">
+    {% csrf_token %}
+
+    <!-- form -->
+    <div class="lg:col-span-2 space-y-8">
+      <!-- contact + delivery -->
+      <div>
+        <h2 class="font-serif text-2xl text-ink mb-5">Delivery Details</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <input name="full_name" required placeholder="Full name" value="{{ form.full_name.value|default:'' }}" class="w-full border {% if form.full_name.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.full_name.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            <input name="email" type="email" required placeholder="Email" value="{{ form.email.value|default:'' }}" class="w-full border {% if form.email.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.email.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            <input name="phone" required placeholder="Phone (e.g. 012-345 6789)" value="{{ form.phone.value|default:'' }}" class="w-full border {% if form.phone.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.phone.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div class="sm:col-span-2">
+            <input name="address" required placeholder="Address" value="{{ form.address.value|default:'' }}" class="w-full border {% if form.address.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.address.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            <input name="city" required placeholder="City" value="{{ form.city.value|default:'' }}" class="w-full border {% if form.city.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.city.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            <input name="postcode" required placeholder="Postcode (e.g. 50000)" value="{{ form.postcode.value|default:'' }}" inputmode="numeric" class="w-full border {% if form.postcode.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.postcode.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+          <div class="sm:col-span-2">
+            <input name="state" required placeholder="State" value="{{ form.state.value|default:'' }}" class="w-full border {% if form.state.errors %}border-maroon{% else %}border-ink/25{% endif %} px-4 py-3 bg-white focus:outline-none focus:border-jade">
+            {% for e in form.state.errors %}<p class="text-maroon text-[12px] mt-1.5">{{ e }}</p>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- region -->
+      <div>
+        <h2 class="font-serif text-2xl text-ink mb-5">Shipping Region</h2>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <label class="cursor-pointer">
+            <input type="radio" name="region" value="west" class="peer sr-only" {% if region == 'west' %}checked{% endif %}>
+            <span class="block border border-ink/25 px-5 py-4 peer-checked:border-jade peer-checked:bg-jade/5 transition-colors">
+              <span class="block font-medium text-ink">West Malaysia</span>
+              <span class="block text-[12px] text-ink/60 mt-1">Peninsular · 2–4 days</span>
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="radio" name="region" value="east" class="peer sr-only" {% if region == 'east' %}checked{% endif %}>
+            <span class="block border border-ink/25 px-5 py-4 peer-checked:border-jade peer-checked:bg-jade/5 transition-colors">
+              <span class="block font-medium text-ink">East Malaysia</span>
+              <span class="block text-[12px] text-ink/60 mt-1">Sabah &amp; Sarawak · 4–7 days</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- payment -->
+      <div>
+        <h2 class="font-serif text-2xl text-ink mb-5">Payment</h2>
+        {% if manual_payment %}
+        <input type="hidden" name="payment_method" value="transfer">
+        <div class="border border-jade/40 bg-jade/5 px-5 py-4">
+          <p class="font-medium text-ink mb-1">Bank Transfer via WhatsApp</p>
+          <p class="text-[13px] text-ink/60">Place your order first — your pieces are reserved right away. We'll then send you our bank details on WhatsApp and email, and ship as soon as your transfer arrives.</p>
+        </div>
+        {% else %}
+        <div class="space-y-3">
+          {% for value, label in payment_choices %}
+          <label class="cursor-pointer block">
+            <input type="radio" name="payment_method" value="{{ value }}" class="peer sr-only" {% if form.payment_method.value == value or not form.payment_method.value and forloop.first %}checked{% endif %}>
+            <span class="flex items-center justify-between border border-ink/25 px-5 py-4 peer-checked:border-jade peer-checked:bg-jade/5 transition-colors">
+              <span class="font-medium text-ink">{{ label }}</span>
+              <span class="text-[11px] tracking-wider uppercase text-ink/50">Secure</span>
+            </span>
+          </label>
+          {% endfor %}
+        </div>
+        {% if payments_enabled %}
+        <p class="text-[12px] text-ink/50 mt-3">🔒 After you place the order, you'll be taken to our secure payment page (FPX online banking / card) to complete payment.</p>
+        {% else %}
+        <p class="text-[12px] text-ink/50 mt-3">🔒 Demo checkout — no real payment is taken yet. Payment gateway keys are not set (see meiyi/settings.py).</p>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- order summary -->
+    <div class="lg:col-span-1">
+      <div class="bg-champagne/60 p-7 rounded-sm sticky top-28">
+        <h2 class="font-serif text-2xl text-ink mb-5">Your Order</h2>
+        <div class="space-y-3 mb-5 max-h-64 overflow-y-auto no-scrollbar">
+          {% for row in cart %}
+          <div class="flex gap-3 text-sm">
+            <img src="{{ row.product.cover }}" class="w-12 h-16 object-cover rounded-sm" alt="">
+            <div class="flex-1">
+              <p class="text-ink">{{ row.product.name }}</p>
+              <p class="text-[12px] text-ink/50">Size {{ row.size }} · ×{{ row.quantity }}</p>
+            </div>
+            <span class="text-ink/80">RM {{ row.line_total|floatformat:2 }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="border-t border-champagne-deep pt-4 space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-ink/70">Subtotal</span><span>RM {{ cart.subtotal|floatformat:2 }}</span></div>
+          {% if cart.coupon %}
+          <div class="flex justify-between"><span class="text-ink/70">Discount ({{ cart.coupon.code }})</span><span class="text-jade">− RM {{ cart.discount|floatformat:2 }}</span></div>
+          {% endif %}
+          <div class="flex justify-between"><span class="text-ink/70">Shipping</span><span id="shipVal">{% if shipping %}RM {{ shipping|floatformat:2 }}{% else %}Free{% endif %}</span></div>
+          <div class="flex justify-between font-medium text-lg text-jade pt-2"><span>Total</span><span id="totalVal">RM {{ total|floatformat:2 }}</span></div>
+        </div>
+        <button type="submit" id="placeBtn" class="w-full mt-6 bg-jade text-champagne py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Place Order — RM {{ total|floatformat:2 }}</button>
+        <p class="text-[11px] text-ink/45 mt-3 text-center">Your details are used only to prepare and deliver your order — <a href="{% url 'shop:info_privacy' %}" class="underline hover:text-jade">Privacy Notice</a>.</p>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Update shipping + total live when the region changes — no form submit.
+  // The server recalculates the real total on "Place Order", so this is display only.
+  const subtotal = {{ cart.subtotal }};
+  const discount = {{ cart.discount }};
+  const threshold = {{ FREE_SHIPPING_THRESHOLD }};
+  const cost = { west: {{ shipping_west }}, east: {{ shipping_east }} };
+  const fmt = n => n.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  function updateTotals() {
+    const region = document.querySelector('input[name=region]:checked').value;
+    const ship = (subtotal === 0 || subtotal >= threshold) ? 0 : cost[region];
+    const total = Math.max(0, subtotal - discount + ship);
+    document.getElementById('shipVal').textContent = ship === 0 ? 'Free' : 'RM ' + fmt(ship);
+    document.getElementById('totalVal').textContent = 'RM ' + fmt(total);
+    document.getElementById('placeBtn').textContent = 'Place Order — RM ' + fmt(total);
+  }
+  document.querySelectorAll('input[name=region]').forEach(r => r.addEventListener('change', updateTotals));
+  updateTotals();
+</script>
+{% endblock %}

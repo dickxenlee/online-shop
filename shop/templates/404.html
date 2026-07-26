@@ -1,0 +1,16 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Page Not Found · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto px-6 py-28 text-center">
+  <p class="font-serif text-7xl text-jade/30 mb-6">404</p>
+  <h1 class="font-serif text-4xl text-ink mb-4">This page has wandered off</h1>
+  <p class="text-ink/60 mb-10">The page you're looking for doesn't exist or has moved. Perhaps one of these will help:</p>
+  <div class="flex flex-wrap justify-center gap-3">
+    <a href="/" class="bg-jade text-champagne px-7 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Home</a>
+    <a href="/search/" class="border border-ink/25 px-7 py-3.5 text-[13px] tracking-wider uppercase hover:border-jade hover:text-jade transition-colors">Search</a>
+    <a href="/track/" class="border border-ink/25 px-7 py-3.5 text-[13px] tracking-wider uppercase hover:border-jade hover:text-jade transition-colors">Track My Order</a>
+  </div>
+</section>
+{% endblock %}

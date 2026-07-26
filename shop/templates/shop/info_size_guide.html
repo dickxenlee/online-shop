@@ -1,0 +1,44 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Size Guide · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Fit &amp; Measurement</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-6">Size Guide</h1>
+  <p class="text-ink/70 leading-relaxed mb-10">A cheongsam follows your shape. Measure over light clothing and keep the tape snug, not tight. Between sizes? Choose the larger — or message us for a made-to-measure recommendation.</p>
+
+  <div class="overflow-x-auto mb-10">
+    <table class="w-full text-sm text-center border-collapse">
+      <thead>
+        <tr class="bg-jade text-champagne text-[12px] tracking-wider uppercase">
+          <th class="py-3 px-3 font-medium">Size</th>
+          <th class="py-3 px-3 font-medium">Bust (cm)</th>
+          <th class="py-3 px-3 font-medium">Waist (cm)</th>
+          <th class="py-3 px-3 font-medium">Hip (cm)</th>
+        </tr>
+      </thead>
+      <tbody class="text-ink/80">
+        <tr class="border-b border-champagne-deep/60"><td class="py-3 font-medium">XS</td><td>78–82</td><td>60–64</td><td>84–88</td></tr>
+        <tr class="border-b border-champagne-deep/60 bg-champagne/40"><td class="py-3 font-medium">S</td><td>83–87</td><td>65–69</td><td>89–93</td></tr>
+        <tr class="border-b border-champagne-deep/60"><td class="py-3 font-medium">M</td><td>88–92</td><td>70–74</td><td>94–98</td></tr>
+        <tr class="border-b border-champagne-deep/60 bg-champagne/40"><td class="py-3 font-medium">L</td><td>93–98</td><td>75–80</td><td>99–104</td></tr>
+        <tr><td class="py-3 font-medium">XL</td><td>99–104</td><td>81–86</td><td>105–110</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="font-serif text-2xl text-ink mb-5">How to measure</h2>
+  <ul class="space-y-4 text-ink/70 leading-relaxed mb-12">
+    <li class="flex gap-3"><span class="text-jade font-serif">1.</span><span><span class="text-ink font-medium">Bust</span> — around the fullest part, tape level across your back.</span></li>
+    <li class="flex gap-3"><span class="text-jade font-serif">2.</span><span><span class="text-ink font-medium">Waist</span> — around the narrowest part, usually just above the navel.</span></li>
+    <li class="flex gap-3"><span class="text-jade font-serif">3.</span><span><span class="text-ink font-medium">Hip</span> — around the fullest part, feet together.</span></li>
+  </ul>
+
+  <div class="bg-champagne/60 rounded-sm p-7 text-center">
+    <p class="text-ink/70 mb-2">Every product page also has a <span class="text-ink font-medium">size calculator</span> —</p>
+    <p class="text-ink/60 text-sm mb-5">enter your three measurements and we'll recommend your size instantly.</p>
+    <a href="{% url 'shop:home' %}#bestsellers" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Browse the Collection</a>
+  </div>
+</section>
+{% endblock %}

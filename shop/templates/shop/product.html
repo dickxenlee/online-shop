@@ -1,0 +1,352 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ product.name }} · Méiyì{% endblock %}
+{% block meta_desc %}{{ product.description|truncatewords:30 }}{% endblock %}
+{% block og_title %}{{ product.name }} · Méiyì Women's Cheongsam{% endblock %}
+{% block og_desc %}{{ product.description|truncatewords:24 }}{% endblock %}
+{% block og_image %}{% if "://" in product.cover %}{{ product.cover }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ product.cover }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 lg:px-10 pt-7 text-[12px] tracking-wide text-ink/50">
+  <a href="{% url 'shop:home' %}" class="hover:text-jade">Home</a> /
+  <a href="{{ product.category.get_absolute_url }}" class="hover:text-jade">{{ product.category.name }}</a> /
+  <span class="text-ink/80">{{ product.name }}</span>
+</div>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 py-10 grid lg:grid-cols-2 gap-12 lg:gap-16">
+  <!-- GALLERY -->
+  <div>
+    <div id="zoomWrap" class="overflow-hidden rounded-sm bg-white cursor-zoom-in">
+      <img id="mainImg" src="{{ product.cover }}" alt="{{ product.name }}" class="w-full h-[640px] object-cover transition-transform duration-300" />
+    </div>
+    <div class="flex gap-3 mt-3 overflow-x-auto no-scrollbar" id="thumbs">
+      <button class="thumb shrink-0 overflow-hidden rounded-sm border border-jade" data-src="{{ product.cover }}"><img src="{{ product.cover }}" class="w-20 h-24 object-cover" alt=""></button>
+      {% if product.hover_image_url %}<button class="thumb shrink-0 overflow-hidden rounded-sm border border-transparent" data-src="{{ product.hover }}"><img src="{{ product.hover }}" class="w-20 h-24 object-cover" alt=""></button>{% endif %}
+      {% for g in product.gallery.all %}<button class="thumb shrink-0 overflow-hidden rounded-sm border border-transparent" data-src="{{ g.src }}"><img src="{{ g.src }}" class="w-20 h-24 object-cover" alt=""></button>{% endfor %}
+    </div>
+  </div>
+
+  <!-- DETAILS -->
+  <div class="lg:pt-4">
+    <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">{{ product.category.name }}{% if product.is_bestseller %} · Best Seller{% endif %}</p>
+    <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">{{ product.name }}</h1>
+
+    <div class="flex items-center gap-4 mb-6">
+      <span class="text-2xl font-medium text-jade">RM {{ product.price|floatformat:2 }}</span>
+      {% if product.on_sale %}
+      <span class="text-ink/40 line-through text-lg">RM {{ product.compare_at_price|floatformat:2 }}</span>
+      <span class="bg-blush/60 text-maroon text-[11px] tracking-wider uppercase px-3 py-1">Save {{ product.discount_percent }}%</span>
+      {% endif %}
+      <form method="post" action="{% url 'shop:wishlist_toggle' product.id %}" class="wish-toggle ml-auto">
+        {% csrf_token %}
+        <button type="submit" aria-label="Save {{ product.name }} to wishlist"
+                class="w-11 h-11 grid place-items-center border border-ink/25 rounded-full text-jade hover:border-jade transition-colors">
+          <svg class="wish-heart" width="19" height="19" viewBox="0 0 24 24" fill="{% if product.id in wishlist_ids %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1.8"><path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2Z"/></svg>
+        </button>
+      </form>
+    </div>
+    {% if review_count %}
+    <a href="#reviews" class="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-jade transition-colors mb-6 -mt-2">
+      <span class="text-jade">{% for i in "12345" %}{% if forloop.counter <= avg_int %}★{% else %}<span class="text-ink/20">★</span>{% endif %}{% endfor %}</span>
+      {{ avg_rating|floatformat:1 }} · {{ review_count }} review{{ review_count|pluralize }}
+    </a>
+    {% endif %}
+
+    <form id="addForm" method="post" action="{% url 'shop:cart_add' product.id %}">
+      {% csrf_token %}
+      <!-- SIZE -->
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-[12px] tracking-wider uppercase text-ink/60">Size</p>
+          <button type="button" id="openGuide" class="inline-flex items-center gap-2 text-[12px] tracking-wider uppercase text-jade border-b border-jade pb-0.5 hover:gap-3 transition-all">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 5h11M2 5v5M13 5v5M5 5v2M8 5v3M11 5v2"/></svg>
+            Size Guide &amp; Measurement Tool
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-2" id="sizes">
+          {% for s in product.size_list %}
+          <label class="cursor-pointer">
+            <input type="radio" name="size" value="{{ s }}" class="peer sr-only" {% if forloop.first %}checked{% endif %}>
+            <span class="block border border-ink/25 px-5 py-3 text-sm peer-checked:border-jade peer-checked:bg-jade peer-checked:text-champagne hover:border-jade transition-colors">{{ s }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <p class="text-[12px] text-ink/50 mt-2">Between sizes? Choose the larger, or use the measurement tool above.</p>
+      </div>
+
+      <!-- QUANTITY + ADD -->
+      {% if product.in_stock %}
+      {% if product.low_stock %}
+      <p class="mt-6 text-[13px] text-maroon">🔥 Only {{ product.stock }} left — order soon.</p>
+      {% endif %}
+      <div class="flex gap-3 mt-4">
+        <div data-qty-group class="flex items-center border border-ink/25">
+          <button type="button" data-qty="-" class="w-11 py-4 text-lg leading-none hover:text-jade transition-colors" aria-label="Decrease quantity">−</button>
+          <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center py-4 focus:outline-none" aria-label="Quantity">
+          <button type="button" data-qty="+" class="w-11 py-4 text-lg leading-none hover:text-jade transition-colors" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="submit" id="addBtnMain" class="flex-1 bg-jade text-champagne py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Add to Bag — RM {{ product.price|floatformat:2 }}</button>
+      </div>
+      {% else %}
+      <div class="mt-8">
+        <button type="button" id="addBtnMain" disabled class="w-full bg-ink/15 text-ink/50 py-4 text-[13px] tracking-wider uppercase cursor-not-allowed">Sold Out</button>
+        <p class="text-[13px] text-ink/60 mt-3">This piece is fully reserved. Message us on WhatsApp — we may tailor one for you.</p>
+      </div>
+      {% endif %}
+    </form>
+
+    {% if not product.in_stock %}
+    <!-- back-in-stock alert (own form — cannot live inside the add form) -->
+    <form method="post" action="{% url 'shop:stock_notify' product.id %}" class="mt-4 bg-champagne/60 rounded-sm p-5">
+      {% csrf_token %}
+      <input type="text" name="website" value="" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <p class="text-[13px] text-ink/70 mb-3">💌 Want this piece? Leave your email — we'll tell you the moment it's back.</p>
+      <div class="flex gap-2">
+        <input type="email" name="email" required placeholder="you@email.com" class="flex-1 min-w-0 border border-ink/25 px-4 py-3 text-sm focus:border-jade outline-none bg-white">
+        <button type="submit" class="bg-jade text-champagne px-5 py-3 text-[12px] tracking-wider uppercase hover:bg-jade-light transition-colors whitespace-nowrap">Notify Me</button>
+      </div>
+    </form>
+    {% endif %}
+
+    <!-- DETAILS ACCORDION -->
+    <div class="mt-8 border-t border-champagne-deep/70">
+      <details open class="group border-b border-champagne-deep/70 py-4">
+        <summary class="flex justify-between items-center cursor-pointer text-[12px] tracking-wider uppercase text-ink">Description <span class="text-jade text-lg leading-none transition-transform group-open:rotate-45">+</span></summary>
+        <p class="text-ink/70 leading-relaxed mt-3 text-sm">{{ product.description }}</p>
+      </details>
+      <details class="group border-b border-champagne-deep/70 py-4">
+        <summary class="flex justify-between items-center cursor-pointer text-[12px] tracking-wider uppercase text-ink">Materials &amp; Fabric <span class="text-jade text-lg leading-none transition-transform group-open:rotate-45">+</span></summary>
+        <p class="text-ink/70 leading-relaxed mt-3 text-sm">Breathable silk-blend with a soft hand-feel and gentle drape. Lined bodice, hand-knotted <em>pankou</em> buttons, and a concealed side zip for an easy fit.</p>
+      </details>
+      <details class="group border-b border-champagne-deep/70 py-4">
+        <summary class="flex justify-between items-center cursor-pointer text-[12px] tracking-wider uppercase text-ink">Care <span class="text-jade text-lg leading-none transition-transform group-open:rotate-45">+</span></summary>
+        <p class="text-ink/70 leading-relaxed mt-3 text-sm">Dry clean only. Cool iron on the reverse if needed. Store on a padded hanger away from direct sunlight to keep the colour rich.</p>
+      </details>
+      <details class="group border-b border-champagne-deep/70 py-4">
+        <summary class="flex justify-between items-center cursor-pointer text-[12px] tracking-wider uppercase text-ink">Shipping &amp; Returns <span class="text-jade text-lg leading-none transition-transform group-open:rotate-45">+</span></summary>
+        <p class="text-ink/70 leading-relaxed mt-3 text-sm">West Malaysia 2–4 days, East Malaysia (Sabah &amp; Sarawak) 4–7 days. Free over RM {{ FREE_SHIPPING_THRESHOLD }}. Free first size exchange within 14 days.</p>
+      </details>
+    </div>
+
+    <!-- TRUST / LOCALIZED -->
+    <div class="mt-9 border-t border-champagne-deep/70 pt-7 space-y-4 text-sm">
+      <div class="flex items-start gap-3"><span class="text-jade mt-0.5">🚚</span><p class="text-ink/70"><span class="text-ink font-medium">Ships across Malaysia.</span> West Malaysia 2–4 days · East Malaysia (Sabah &amp; Sarawak) 4–7 days. Free over RM {{ FREE_SHIPPING_THRESHOLD }}.</p></div>
+      <div class="flex items-start gap-3"><span class="text-jade mt-0.5">🔒</span><p class="text-ink/70"><span class="text-ink font-medium">Secure checkout.</span> Pay safely with FPX, GrabPay, or card.</p></div>
+      <div class="flex items-start gap-3"><span class="text-jade mt-0.5">📐</span><p class="text-ink/70"><span class="text-ink font-medium">Perfect-fit promise.</span> Free first exchange on sizing within 14 days.</p></div>
+      <div class="flex items-start gap-3"><span class="text-jade mt-0.5">🪡</span><p class="text-ink/70"><span class="text-ink font-medium">Made in Malaysia.</span> Cut and hand-finished by women tailors in our Kuala Lumpur atelier.</p></div>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <span class="border border-ink/20 px-3 py-1.5 rounded text-[11px] tracking-wider">FPX</span>
+        <span class="border border-ink/20 px-3 py-1.5 rounded text-[11px] tracking-wider">GrabPay</span>
+        <span class="border border-ink/20 px-3 py-1.5 rounded text-[11px] tracking-wider">Visa</span>
+        <span class="border border-ink/20 px-3 py-1.5 rounded text-[11px] tracking-wider">Mastercard</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STICKY ADD BAR (mobile) -->
+<div id="stickyBar" class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#FBF8F4]/95 backdrop-blur border-t border-champagne-deep/60 px-5 py-3 flex items-center gap-4 translate-y-full transition-transform duration-300">
+  <div class="flex-1 min-w-0">
+    <p class="font-serif text-sm text-ink truncate">{{ product.name }}</p>
+    <p class="text-jade text-sm">RM {{ product.price|floatformat:2 }}</p>
+  </div>
+  {% if product.in_stock %}
+  <button type="submit" form="addForm" class="bg-jade text-champagne px-6 py-3 text-[12px] tracking-wider uppercase hover:bg-jade-light transition-colors whitespace-nowrap">Add to Bag</button>
+  {% else %}
+  <span class="bg-ink/15 text-ink/50 px-6 py-3 text-[12px] tracking-wider uppercase whitespace-nowrap">Sold Out</span>
+  {% endif %}
+</div>
+
+<!-- REVIEWS -->
+<section id="reviews" class="max-w-7xl mx-auto px-6 lg:px-10 py-16 border-t border-champagne-deep/60">
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+    <h2 class="font-serif text-3xl text-ink">Reviews</h2>
+    {% if review_count %}
+    <p class="text-sm text-ink/60">
+      <span class="text-jade text-base">{% for i in "12345" %}{% if forloop.counter <= avg_int %}★{% else %}<span class="text-ink/20">★</span>{% endif %}{% endfor %}</span>
+      {{ avg_rating|floatformat:1 }} · {{ review_count }} review{{ review_count|pluralize }}
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-12">
+    <!-- review list -->
+    <div class="space-y-6">
+      {% for r in reviews %}
+      <div class="border-b border-champagne-deep/60 pb-6">
+        <div class="text-jade">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}<span class="text-ink/20">★</span>{% endif %}{% endfor %}</div>
+        <p class="text-ink/80 leading-relaxed mt-2">{{ r.comment }}</p>
+        <p class="text-[12px] text-ink/50 mt-2">{{ r.name }} · {{ r.created_at|date:"j M Y" }}</p>
+      </div>
+      {% empty %}
+      <p class="text-ink/60">No reviews yet — be the first to share how it fits.</p>
+      {% endfor %}
+    </div>
+
+    <!-- review form -->
+    <div class="bg-champagne/60 rounded-sm p-7 h-fit">
+      <h3 class="font-serif text-xl text-ink mb-4">Write a review</h3>
+      <form method="post" action="{% url 'shop:review_add' product.id %}" class="space-y-4">
+        {% csrf_token %}
+        <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-5000px" aria-hidden="true">
+        <input name="name" required placeholder="Your name" class="w-full border border-ink/25 bg-white px-4 py-3 text-sm focus:outline-none focus:border-jade">
+        <div>
+          <p class="text-[12px] tracking-wider uppercase text-ink/60 mb-2">Your rating</p>
+          <div class="flex flex-wrap gap-2">
+            {% for i in "12345" %}
+            <label class="cursor-pointer">
+              <input type="radio" name="rating" value="{{ forloop.counter }}" class="peer sr-only" {% if forloop.last %}checked{% endif %}>
+              <span class="block border border-ink/25 px-3.5 py-2 text-sm peer-checked:border-jade peer-checked:bg-jade peer-checked:text-champagne hover:border-jade transition-colors">{{ forloop.counter }} ★</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <textarea name="comment" required rows="4" placeholder="How is the fit, the fabric, the feel?" class="w-full border border-ink/25 bg-white px-4 py-3 text-sm focus:outline-none focus:border-jade"></textarea>
+        <button type="submit" class="w-full bg-jade text-champagne py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Submit Review</button>
+        <p class="text-[11px] text-ink/50">Your review appears after we approve it — this keeps the shop spam-free.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED -->
+{% if related %}
+<section class="max-w-7xl mx-auto px-6 lg:px-10 py-16 border-t border-champagne-deep/60">
+  <h2 class="font-serif text-3xl text-ink mb-10">You May Also Love</h2>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+    {% for p in related %}
+    <a href="{{ p.get_absolute_url }}" class="product-card group">
+      <div class="relative overflow-hidden rounded-sm bg-white">
+        <img src="{{ p.cover }}" alt="{{ p.name }}" class="img-front h-[280px] w-full object-cover">
+        <img src="{{ p.hover }}" alt="{{ p.name }}" class="img-back absolute inset-0 h-[280px] w-full object-cover">
+      </div>
+      <div class="pt-3 flex items-center justify-between">
+        <h3 class="font-serif text-base text-ink">{{ p.name }}</h3>
+        <span class="text-jade text-sm">RM {{ p.price|floatformat:2 }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- RECENTLY VIEWED -->
+{% if recent %}
+<section class="max-w-7xl mx-auto px-6 lg:px-10 py-16 border-t border-champagne-deep/60">
+  <h2 class="font-serif text-3xl text-ink mb-10">Recently Viewed</h2>
+  <div class="grid grid-cols-3 lg:grid-cols-6 gap-4">
+    {% for p in recent %}
+    <a href="{{ p.get_absolute_url }}" class="group">
+      <div class="overflow-hidden rounded-sm bg-white">
+        <img src="{{ p.cover }}" alt="{{ p.name }}" class="h-[140px] sm:h-[180px] w-full object-cover transition-transform duration-500 group-hover:scale-105">
+      </div>
+      <p class="text-[12px] text-ink mt-2 truncate">{{ p.name }}</p>
+      <p class="text-[12px] text-jade">RM {{ p.price|floatformat:2 }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ============ SIZE GUIDE MODAL ============ -->
+<div id="guideModal" class="modal fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm grid place-items-center p-4">
+  <div class="panel bg-[#FBF8F4] max-w-2xl w-full max-h-[90vh] overflow-y-auto no-scrollbar rounded-sm">
+    <div class="flex items-center justify-between px-8 py-5 border-b border-champagne-deep/70 sticky top-0 bg-[#FBF8F4]">
+      <h3 class="font-serif text-2xl text-ink">Size Guide &amp; Measurement Tool</h3>
+      <button id="closeGuide" aria-label="Close" class="text-ink/60 hover:text-jade transition-colors text-2xl leading-none">×</button>
+    </div>
+    <div class="p-8">
+      <p class="text-ink/70 text-sm mb-6">A cheongsam follows your shape. Measure over light clothing, keep the tape snug not tight. Between sizes? Pick the larger — or use the calculator for a made-to-measure recommendation.</p>
+      <div class="overflow-x-auto mb-9">
+        <table class="w-full text-sm text-center border-collapse">
+          <thead><tr class="bg-jade text-champagne text-[12px] tracking-wider uppercase">
+            <th class="py-3 px-3 font-medium">Size</th><th class="py-3 px-3 font-medium">Bust (cm)</th><th class="py-3 px-3 font-medium">Waist (cm)</th><th class="py-3 px-3 font-medium">Hip (cm)</th>
+          </tr></thead>
+          <tbody class="text-ink/80">
+            <tr class="border-b border-champagne-deep/60"><td class="py-3 font-medium">XS</td><td>78–82</td><td>60–64</td><td>84–88</td></tr>
+            <tr class="border-b border-champagne-deep/60 bg-champagne/40"><td class="py-3 font-medium">S</td><td>83–87</td><td>65–69</td><td>89–93</td></tr>
+            <tr class="border-b border-champagne-deep/60"><td class="py-3 font-medium">M</td><td>88–92</td><td>70–74</td><td>94–98</td></tr>
+            <tr class="border-b border-champagne-deep/60 bg-champagne/40"><td class="py-3 font-medium">L</td><td>93–98</td><td>75–80</td><td>99–104</td></tr>
+            <tr><td class="py-3 font-medium">XL</td><td>99–104</td><td>81–86</td><td>105–110</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4 class="font-serif text-xl text-ink mb-1">Find My Size</h4>
+      <p class="text-ink/60 text-sm mb-5">Enter your measurements in centimetres.</p>
+      <div class="grid grid-cols-3 gap-3 mb-5">
+        <div><label class="block text-[11px] tracking-wider uppercase text-ink/60 mb-1.5">Bust</label><input id="bust" type="number" placeholder="88" class="w-full border border-ink/25 px-3 py-2.5 bg-white focus:outline-none focus:border-jade"></div>
+        <div><label class="block text-[11px] tracking-wider uppercase text-ink/60 mb-1.5">Waist</label><input id="waist" type="number" placeholder="71" class="w-full border border-ink/25 px-3 py-2.5 bg-white focus:outline-none focus:border-jade"></div>
+        <div><label class="block text-[11px] tracking-wider uppercase text-ink/60 mb-1.5">Hip</label><input id="hip" type="number" placeholder="95" class="w-full border border-ink/25 px-3 py-2.5 bg-white focus:outline-none focus:border-jade"></div>
+      </div>
+      <button id="calcBtn" class="w-full bg-jade text-champagne py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Recommend My Size</button>
+      <div id="result" class="hidden mt-5 bg-champagne/60 border border-champagne-deep px-5 py-4 text-center">
+        <p class="text-ink/70 text-sm">Your recommended size</p>
+        <p id="resultSize" class="font-serif text-3xl text-jade my-1">—</p>
+        <p id="resultNote" class="text-[12px] text-ink/60"></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // gallery thumbs
+  const mainImg = document.getElementById('mainImg');
+  document.querySelectorAll('.thumb').forEach(btn => {
+    btn.onclick = () => {
+      mainImg.src = btn.dataset.src;
+      document.querySelectorAll('.thumb').forEach(b => b.classList.replace('border-jade','border-transparent'));
+      btn.classList.replace('border-transparent','border-jade');
+    };
+  });
+  // size guide modal
+  const modal = document.getElementById('guideModal');
+  document.getElementById('openGuide').onclick = () => modal.classList.add('open');
+  document.getElementById('closeGuide').onclick = () => modal.classList.remove('open');
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+  // calculator
+  const chart = [['XS',82,64,88],['S',87,69,93],['M',92,74,98],['L',98,80,104],['XL',104,86,110]];
+  const order = ['XS','S','M','L','XL','Made-to-measure'];
+  const pick = (v,i) => { for (const r of chart) if (v <= r[i]) return r[0]; return 'Made-to-measure'; };
+  document.getElementById('calcBtn').onclick = () => {
+    const b=+bust.value, w=+waist.value, h=+hip.value, res=document.getElementById('result');
+    res.classList.remove('hidden');
+    if(!b||!w||!h){resultSize.textContent='—';resultNote.textContent='Please fill in all three measurements.';return;}
+    const picks=[pick(b,1),pick(w,2),pick(h,3)];
+    const best=picks.reduce((a,c)=>order.indexOf(c)>order.indexOf(a)?c:a);
+    resultSize.textContent=best;
+    resultNote.textContent = best==='Made-to-measure'
+      ? 'Just outside our standard range — we will tailor this piece to your exact numbers, free of charge.'
+      : 'Based on your largest measurement, for a comfortable form-fitting drape.';
+  };
+  // product image zoom (follows cursor on desktop, tap toggles on mobile)
+  const zoomWrap = document.getElementById('zoomWrap');
+  let zoomed = false;
+  function originFrom(e){
+    const r = zoomWrap.getBoundingClientRect();
+    const x = Math.min(100, Math.max(0, ((e.clientX - r.left)/r.width)*100));
+    const y = Math.min(100, Math.max(0, ((e.clientY - r.top)/r.height)*100));
+    mainImg.style.transformOrigin = x+'% '+y+'%';
+  }
+  function resetZoom(){ zoomed = false; mainImg.style.transform = 'scale(1)'; }
+  if (zoomWrap){
+    if (window.matchMedia('(hover:hover)').matches){
+      zoomWrap.addEventListener('mousemove', e=>{ originFrom(e); mainImg.style.transform='scale(1.6)'; });
+      zoomWrap.addEventListener('mouseleave', ()=>{ if(!zoomed) mainImg.style.transform='scale(1)'; });
+    }
+    zoomWrap.addEventListener('click', e=>{ zoomed=!zoomed; originFrom(e); mainImg.style.transform = zoomed ? 'scale(1.6)' : 'scale(1)'; });
+    document.querySelectorAll('.thumb').forEach(b=> b.addEventListener('click', resetZoom));
+  }
+  // sticky add-to-bag bar (mobile) — show once the main button scrolls out of view
+  const stickyBar = document.getElementById('stickyBar');
+  const addBtnMain = document.getElementById('addBtnMain');
+  if (stickyBar && addBtnMain && 'IntersectionObserver' in window){
+    const so = new IntersectionObserver(es=>{
+      es.forEach(en=> stickyBar.classList.toggle('translate-y-full', en.isIntersecting));
+    }, {threshold:0});
+    so.observe(addBtnMain);
+  }
+</script>
+{% endblock %}

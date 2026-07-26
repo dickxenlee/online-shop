@@ -1,0 +1,49 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Shipping &amp; Returns · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Customer Care</p>
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-10">Shipping &amp; Returns</h1>
+
+  <h2 class="font-serif text-2xl text-ink mb-5">Shipping across Malaysia</h2>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm text-left border-collapse">
+      <thead>
+        <tr class="bg-jade text-champagne text-[12px] tracking-wider uppercase">
+          <th class="py-3 px-4 font-medium">Region</th>
+          <th class="py-3 px-4 font-medium">Delivery time</th>
+          <th class="py-3 px-4 font-medium">Fee</th>
+        </tr>
+      </thead>
+      <tbody class="text-ink/80">
+        <tr class="border-b border-champagne-deep/60">
+          <td class="py-3 px-4">West Malaysia (Peninsular)</td>
+          <td class="py-3 px-4">2–4 working days</td>
+          <td class="py-3 px-4">RM {{ shipping_west }}</td>
+        </tr>
+        <tr class="border-b border-champagne-deep/60 bg-champagne/40">
+          <td class="py-3 px-4">East Malaysia (Sabah &amp; Sarawak)</td>
+          <td class="py-3 px-4">4–7 working days</td>
+          <td class="py-3 px-4">RM {{ shipping_east }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-ink/70 leading-relaxed mb-12">Orders over <span class="text-ink font-medium">RM {{ FREE_SHIPPING_THRESHOLD }}</span> ship <span class="text-jade font-medium">free</span>, nationwide. Every piece is checked, pressed, and wrapped in tissue before it leaves our Kuala Lumpur atelier. You'll receive your tracking number once your order ships.</p>
+
+  <h2 id="returns" class="font-serif text-2xl text-ink mb-5">Returns &amp; Exchange</h2>
+  <ul class="space-y-4 text-ink/70 leading-relaxed mb-12">
+    <li class="flex gap-3"><span class="text-jade">✓</span><span><span class="text-ink font-medium">Free first size exchange</span> within 14 days of delivery — if the size isn't right, we'll swap it at no cost.</span></li>
+    <li class="flex gap-3"><span class="text-jade">✓</span><span>Items must be unworn, unwashed, with tags attached.</span></li>
+    <li class="flex gap-3"><span class="text-jade">✓</span><span>To arrange an exchange, message us on WhatsApp with your order number.</span></li>
+    <li class="flex gap-3"><span class="text-maroon">✕</span><span>Made-to-measure pieces cannot be returned, but we'll adjust the fit for free.</span></li>
+  </ul>
+
+  <div class="bg-champagne/60 rounded-sm p-7 text-center">
+    <p class="text-ink/70 mb-4">Questions about your order?</p>
+    <a href="{% url 'shop:track' %}" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Track My Order</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Your Bag · Méiyì{% endblock %}
+
+{% block content %}
+{% if cart_count %}{% include "shop/_steps.html" with active=0 %}{% endif %}
+<section class="max-w-5xl mx-auto px-6 lg:px-10 py-12">
+  <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-10">Your Bag</h1>
+
+  {% if cart_count %}
+  <div class="grid lg:grid-cols-3 gap-12">
+    <!-- items -->
+    <div class="lg:col-span-2 space-y-6">
+      {% for row in cart %}
+      <div class="flex gap-5 border-b border-champagne-deep/60 pb-6">
+        <a href="{{ row.product.get_absolute_url }}" class="shrink-0">
+          <img src="{{ row.product.cover }}" alt="{{ row.product.name }}" class="w-24 h-32 object-cover rounded-sm">
+        </a>
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <div>
+              <a href="{{ row.product.get_absolute_url }}" class="font-serif text-lg text-ink hover:text-jade transition-colors">{{ row.product.name }}</a>
+              <p class="text-[12px] tracking-wider text-ink/50 uppercase mt-1">Size {{ row.size }}</p>
+            </div>
+            <span class="text-jade font-medium">RM {{ row.line_total|floatformat:2 }}</span>
+          </div>
+          <div class="flex items-center gap-4 mt-4">
+            <form method="post" action="{% url 'shop:cart_update' row.key %}" class="flex items-center gap-2">
+              {% csrf_token %}
+              <div data-qty-group class="flex items-center border border-ink/25">
+                <button type="button" data-qty="-" class="w-8 py-2 text-base leading-none hover:text-jade transition-colors" aria-label="Decrease quantity">−</button>
+                <input type="number" name="quantity" value="{{ row.quantity }}" min="0" class="w-10 text-center py-2 text-sm focus:outline-none">
+                <button type="button" data-qty="+" class="w-8 py-2 text-base leading-none hover:text-jade transition-colors" aria-label="Increase quantity">+</button>
+              </div>
+              <button class="text-[12px] tracking-wider uppercase text-ink/60 hover:text-jade transition-colors">Update</button>
+            </form>
+            <form method="post" action="{% url 'shop:cart_remove' row.key %}">
+              {% csrf_token %}
+              <button class="text-[12px] tracking-wider uppercase text-maroon/70 hover:text-maroon transition-colors">Remove</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- summary -->
+    <div class="lg:col-span-1">
+      <div class="bg-champagne/60 p-7 rounded-sm sticky top-28">
+        <h2 class="font-serif text-2xl text-ink mb-5">Summary</h2>
+        <div class="flex justify-between text-sm mb-3"><span class="text-ink/70">Subtotal</span><span class="font-medium">RM {{ cart.subtotal|floatformat:2 }}</span></div>
+
+        <!-- discount code -->
+        {% if cart.coupon %}
+        <div class="flex justify-between items-center text-sm mb-3">
+          <span class="text-ink/70">Code <span class="text-jade font-medium">{{ cart.coupon.code }}</span></span>
+          <span class="text-jade font-medium">− RM {{ cart.discount|floatformat:2 }}</span>
+        </div>
+        <form method="post" action="{% url 'shop:coupon_remove' %}" class="mb-4">
+          {% csrf_token %}
+          <button class="text-[11px] tracking-wider uppercase text-ink/50 hover:text-maroon transition-colors">Remove code</button>
+        </form>
+        {% else %}
+        <form method="post" action="{% url 'shop:coupon_apply' %}" class="flex gap-2 mb-4">
+          {% csrf_token %}
+          <input name="code" placeholder="Discount code" class="flex-1 min-w-0 border border-ink/25 bg-white px-3 py-2 text-sm uppercase focus:outline-none focus:border-jade" aria-label="Discount code">
+          <button class="border border-jade text-jade px-4 text-[11px] tracking-wider uppercase hover:bg-jade hover:text-champagne transition-colors">Apply</button>
+        </form>
+        {% endif %}
+        <div class="mb-4">
+          {% if cart.amount_to_free_shipping > 0 %}
+          <p class="text-[12px] text-maroon mb-2">Add RM {{ cart.amount_to_free_shipping|floatformat:2 }} more for free shipping.</p>
+          <div class="h-1.5 bg-champagne-deep rounded-full overflow-hidden">
+            <div class="h-full bg-jade rounded-full transition-all duration-700 ease-out" style="width:0%" data-bar="{% widthratio cart.subtotal FREE_SHIPPING_THRESHOLD 100 %}"></div>
+          </div>
+          {% else %}
+          <p class="text-[12px] text-jade mb-2">✓ You qualify for free shipping.</p>
+          <div class="h-1.5 bg-champagne-deep rounded-full overflow-hidden">
+            <div class="h-full bg-jade rounded-full transition-all duration-700 ease-out" style="width:0%" data-bar="100"></div>
+          </div>
+          {% endif %}
+        </div>
+        <p class="text-[12px] text-ink/50 mb-5">Shipping calculated at checkout.</p>
+        <a href="{% url 'shop:checkout' %}" class="block text-center bg-jade text-champagne py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Proceed to Checkout</a>
+        <a href="{% url 'shop:home' %}#bestsellers" class="block text-center mt-3 text-[12px] tracking-wider uppercase text-ink/60 hover:text-jade transition-colors">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center py-24">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-6 text-jade/50"><path d="M5 7h12l-1 12H6L5 7Z"/><path d="M8 7a3 3 0 0 1 6 0"/></svg>
+    <h2 class="font-serif text-2xl text-ink mb-2">Your bag is empty</h2>
+    <p class="text-ink/60 mb-8">Discover timeless cheongsam made for the way you live today.</p>
+    <a href="{% url 'shop:home' %}#bestsellers" class="inline-block bg-jade text-champagne px-8 py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Shop the Collection</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

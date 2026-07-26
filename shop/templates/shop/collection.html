@@ -1,0 +1,87 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ category.name }} · Méiyì{% endblock %}
+
+{% block content %}
+<!-- header band -->
+<section class="relative h-[42vh] min-h-[300px] overflow-hidden">
+  <img src="{{ category.cover }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover" />
+  <div class="absolute inset-0 bg-ink/45"></div>
+  <div class="relative h-full max-w-7xl mx-auto px-6 lg:px-10 flex flex-col justify-end pb-12 text-champagne">
+    <p class="text-[11px] tracking-luxe uppercase mb-3 opacity-80">Collection</p>
+    <h1 class="font-serif text-5xl sm:text-6xl">{{ category.name }}</h1>
+    <p class="mt-2 opacity-80">{{ category.tagline }}</p>
+  </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-6 lg:px-10 py-16">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-10">
+    <p class="text-[12px] tracking-wider text-ink/50">{{ total_count }} piece{{ total_count|pluralize }}</p>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <!-- size filter chips -->
+      <div class="flex items-center gap-1.5" role="group" aria-label="Filter by size">
+        <a href="?sort={{ sort }}" class="text-[11px] tracking-wider uppercase px-3 py-1.5 border transition-colors {% if not size %}border-jade bg-jade text-champagne{% else %}border-ink/20 text-ink/60 hover:border-jade hover:text-jade{% endif %}">All</a>
+        {% for s in all_sizes %}
+        <a href="?sort={{ sort }}&size={{ s }}" class="text-[11px] tracking-wider uppercase px-3 py-1.5 border transition-colors {% if size == s %}border-jade bg-jade text-champagne{% else %}border-ink/20 text-ink/60 hover:border-jade hover:text-jade{% endif %}">{{ s }}</a>
+        {% endfor %}
+      </div>
+
+      <!-- sort -->
+      <form method="get" class="flex items-center gap-2">
+        {% if size %}<input type="hidden" name="size" value="{{ size }}">{% endif %}
+        <label for="sortSel" class="text-[11px] tracking-wider uppercase text-ink/50">Sort</label>
+        <select id="sortSel" name="sort" onchange="this.form.submit()"
+                class="border border-ink/25 bg-white px-3 py-1.5 text-sm focus:outline-none focus:border-jade">
+          <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+          <option value="price" {% if sort == 'price' %}selected{% endif %}>Price: low to high</option>
+          <option value="-price" {% if sort == '-price' %}selected{% endif %}>Price: high to low</option>
+          <option value="new" {% if sort == 'new' %}selected{% endif %}>Newest</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  {% if products %}
+  <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+    {% for p in products %}
+    <div class="product-card group fade-up relative">
+      <div class="relative overflow-hidden rounded-sm bg-white">
+        <a href="{{ p.get_absolute_url }}" class="block">
+          <img src="{{ p.cover }}" alt="{{ p.name }}" class="img-front h-[300px] sm:h-[420px] w-full object-cover" />
+          <img src="{{ p.hover }}" alt="{{ p.name }}" class="img-back absolute inset-0 h-[300px] sm:h-[420px] w-full object-cover" />
+        </a>
+        {% if not p.in_stock %}<span class="absolute top-4 left-4 bg-ink/85 text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Sold Out</span>
+        {% elif p.is_bestseller %}<span class="absolute top-4 left-4 bg-jade text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Best Seller</span>{% endif %}
+        {% if p.on_sale %}<span class="absolute top-4 right-4 bg-maroon text-champagne text-[10px] tracking-wider uppercase px-3 py-1">-{{ p.discount_percent }}%</span>{% endif %}
+        {% if p.in_stock %}
+        <form method="post" action="{% url 'shop:cart_add' p.id %}" class="quick-add absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+          {% csrf_token %}
+          <button type="submit" aria-label="Add {{ p.name }} to bag" class="bg-champagne text-ink text-[12px] tracking-wider uppercase px-6 py-2.5 hover:bg-jade hover:text-champagne transition-colors">Quick Add</button>
+        </form>
+        {% endif %}
+        {% include "shop/_wish_btn.html" with p=p %}
+      </div>
+      <a href="{{ p.get_absolute_url }}" class="pt-4 flex items-start justify-between">
+        <div>
+          <h3 class="font-serif text-lg text-ink">{{ p.name }}</h3>
+          <div class="flex gap-1.5 mt-2">{% for s in p.size_list %}<span class="text-[11px] text-ink/60 border border-ink/20 w-7 h-7 grid place-items-center rounded-sm">{{ s }}</span>{% endfor %}</div>
+        </div>
+        <span class="font-medium text-jade whitespace-nowrap">RM {{ p.price|floatformat:2 }}</span>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% include "shop/_pagination.html" %}
+  {% else %}
+  <div class="text-ink/60 py-20 text-center">
+    {% if size %}
+    <p class="mb-4">No pieces in size {{ size }} here yet.</p>
+    <a href="?sort={{ sort }}" class="text-jade text-[12px] tracking-wider uppercase border-b border-jade pb-0.5">Show all sizes</a>
+    {% else %}
+    <p>No pieces in this collection yet.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

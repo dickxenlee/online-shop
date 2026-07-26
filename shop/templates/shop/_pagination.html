@@ -1,0 +1,12 @@
+{% comment %}Page controls. Needs: page_obj, base_qs (querystring ending with '&' or '').{% endcomment %}
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="flex items-center justify-center gap-6 mt-14">
+  {% if page_obj.has_previous %}
+  <a href="?{{ base_qs }}page={{ page_obj.previous_page_number }}" class="border border-ink/25 px-6 py-3 text-[12px] tracking-wider uppercase hover:border-jade hover:text-jade transition-colors">← Previous</a>
+  {% endif %}
+  <span class="text-[12px] tracking-wider text-ink/50 uppercase">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+  <a href="?{{ base_qs }}page={{ page_obj.next_page_number }}" class="border border-ink/25 px-6 py-3 text-[12px] tracking-wider uppercase hover:border-jade hover:text-jade transition-colors">Next →</a>
+  {% endif %}
+</div>
+{% endif %}

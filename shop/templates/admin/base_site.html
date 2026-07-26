@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+{% if user.is_anonymous %}{% include "admin/color_theme_toggle.html" %}{% endif %}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  /* Méiyì brand: jade header + buttons, in light and dark theme. */
+  #header { background: #1F4A40; color: #EFE6D9; }
+  #header a:link, #header a:visited, #user-tools a { color: #EFE6D9; }
+  #site-name { font-family: Georgia, 'Times New Roman', serif;
+               letter-spacing: .04em; }
+  div.breadcrumbs { background: #2E5A4E; color: #EFE6D9; }
+  div.breadcrumbs a { color: #E3D3BD; }
+  .module h2, .module caption, .inline-group h2 {
+    background: #1F4A40; color: #EFE6D9; }
+  .button, input[type=submit], input[type=button], .submit-row input,
+  a.button { background: #1F4A40; color: #fff; }
+  .button:hover, input[type=submit]:hover, input[type=button]:hover,
+  .button:focus, input[type=submit]:focus, input[type=button]:focus {
+    background: #16382F; }
+  .button.default, input[type=submit].default { background: #5C1F25; }
+  .button.default:hover, input[type=submit].default:hover { background: #47161b; }
+</style>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
