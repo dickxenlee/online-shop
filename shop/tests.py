@@ -596,6 +596,20 @@ class QuickProductTests(TestCase):
 
 
 class PwaTests(TestCase):
+    def test_home_has_mobile_bottom_navigation(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'id="mobileBottomNav"')
+        self.assertContains(response, 'id="mobileSearchBtn"')
+
+    def test_offline_page_is_public_and_helpful(self):
+        response = self.client.get(reverse('shop:offline'))
+        self.assertContains(response, 'You are offline')
+        self.assertContains(response, 'Try again')
+
+    def test_home_shows_pwa_install_help(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'id="pwaInstallHelp"')
+        self.assertContains(response, 'Add to Home Screen')
     def test_manifest_describes_the_installable_meiyi_app(self):
         manifest_path = finders.find('shop/manifest.webmanifest')
         if manifest_path is None:

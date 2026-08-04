@@ -1,6 +1,7 @@
 {% load static %}
 const CACHE_NAME = 'meiyi-public-v1';
 const HOME = '/';
+const OFFLINE = '/offline/';
 const STATIC_ASSETS = [
   '{% static "shop/favicon.svg" %}',
   '{% static "shop/manifest.webmanifest" %}',
@@ -15,7 +16,7 @@ const PRIVATE_PATHS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll([HOME, ...STATIC_ASSETS]))
+      .then(cache => cache.addAll([HOME, OFFLINE, ...STATIC_ASSETS]))
       .then(() => self.skipWaiting())
   );
 });
@@ -44,7 +45,7 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put(HOME, response.clone()));
         }
         return response;
-      }).catch(() => caches.match(HOME))
+      }).catch(() => caches.match(OFFLINE))
     );
     return;
   }

@@ -63,6 +63,10 @@ def service_worker(request):
     return response
 
 
+def offline(request):
+    return render(request, 'shop/offline.html')
+
+
 def home(request):
     categories = Category.objects.all()
     bestsellers = Product.objects.filter(is_active=True, is_bestseller=True)[:8]

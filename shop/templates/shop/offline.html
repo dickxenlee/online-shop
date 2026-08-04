@@ -1,0 +1,14 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Offline · Méiyì{% endblock %}
+
+{% block content %}
+<main class="min-h-[55vh] grid place-items-center px-6 text-center">
+  <div class="max-w-sm">
+    <p class="text-[11px] tracking-luxe uppercase text-maroon mb-4">Méiyì</p>
+    <h1 class="font-serif text-4xl text-ink mb-4">You are offline</h1>
+    <p class="text-ink/70 leading-relaxed mb-7">Please check your internet connection, then return to the collection.</p>
+    <a href="{% url 'shop:home' %}" class="inline-flex bg-jade text-champagne px-6 py-3 text-xs tracking-wider uppercase">Try again</a>
+  </div>
+</main>
+{% endblock %}

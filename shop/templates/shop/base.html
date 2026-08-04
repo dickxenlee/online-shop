@@ -77,10 +77,10 @@
   </style>
   {% block head_extra %}{% endblock %}
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased pb-20 md:pb-0">
 
-  <div class="bg-jade text-champagne text-[11px] tracking-luxe text-center py-2 uppercase">
-    Proudly made in Malaysia · Complimentary nationwide shipping over RM {{ FREE_SHIPPING_THRESHOLD|default:350 }} · West &amp; East
+  <div class="bg-jade text-champagne text-[10px] sm:text-[11px] tracking-[0.16em] text-center py-3 uppercase whitespace-nowrap overflow-hidden">
+    Made in Malaysia · Free shipping over RM {{ FREE_SHIPPING_THRESHOLD|default:350 }}
   </div>
 
   <header class="sticky top-0 z-40 backdrop-blur bg-[#FBF8F4]/85 border-b border-champagne-deep/60">
@@ -99,14 +99,14 @@
         <span class="block text-[9px] tracking-[0.4em] text-ink/50 mt-0.5">WOMEN'S CHEONGSAM</span>
       </a>
       <div class="flex items-center gap-5 text-ink/80">
-        <button id="searchBtn" aria-label="Search" aria-expanded="false" class="hover:text-jade transition-colors">
+        <button id="searchBtn" aria-label="Search" aria-expanded="false" class="hidden md:block hover:text-jade transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
         </button>
-        <a href="{% if user.is_authenticated %}{% url 'shop:account' %}{% else %}{% url 'shop:login' %}{% endif %}" aria-label="{% if user.is_authenticated %}My account{% else %}Log in{% endif %}" class="relative hover:text-jade transition-colors">
+        <a href="{% if user.is_authenticated %}{% url 'shop:account' %}{% else %}{% url 'shop:login' %}{% endif %}" aria-label="{% if user.is_authenticated %}My account{% else %}Log in{% endif %}" class="hidden md:block relative hover:text-jade transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
           {% if user.is_authenticated %}<span class="absolute -top-1 -right-1 bg-jade w-2 h-2 rounded-full"></span>{% endif %}
         </a>
-        <a href="{% url 'shop:wishlist' %}" id="wishLink" aria-label="Wishlist" class="relative hover:text-jade transition-colors">
+        <a href="{% url 'shop:wishlist' %}" id="wishLink" aria-label="Wishlist" class="hidden md:block relative hover:text-jade transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21C7 16.5 3 13 3 8.8 3 6 5.2 4 7.8 4c1.7 0 3.2.9 4.2 2.3C13 4.9 14.5 4 16.2 4 18.8 4 21 6 21 8.8c0 4.2-4 7.7-9 12.2Z"/></svg>
           {% if wishlist_count %}<span id="wishCount" class="absolute -top-2 -right-2 bg-jade text-champagne text-[9px] w-4 h-4 rounded-full grid place-items-center">{{ wishlist_count }}</span>{% endif %}
         </a>
@@ -198,9 +198,19 @@
   {% if WHATSAPP_NUMBER %}
   <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi%20M%C3%A9iy%C3%AC!%20I%27d%20like%20to%20ask%20about%20a%20cheongsam."
      target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp"
-     class="fixed bottom-20 lg:bottom-8 right-4 lg:right-6 z-40 block p-3.5 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 transition-transform">
+     class="fixed bottom-24 md:bottom-6 right-4 lg:right-6 z-40 block p-3.5 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-110 transition-transform">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
   </a>
+  {% endif %}
+
+  {% if request.resolver_match.url_name != 'checkout' and request.resolver_match.url_name != 'order_done' and request.resolver_match.url_name != 'payment_start' and request.resolver_match.url_name != 'payment_return' and request.resolver_match.url_name != 'payment_callback' %}
+  <nav id="mobileBottomNav" aria-label="Mobile navigation" class="md:hidden fixed inset-x-0 bottom-0 z-40 bg-[#FBF8F4]/95 backdrop-blur border-t border-champagne-deep/70 grid grid-cols-5 px-2 py-2 text-[9px] tracking-wide text-ink/70">
+    <a href="{% url 'shop:home' %}" class="min-h-11 grid place-items-center gap-1 hover:text-jade"><span aria-hidden="true">⌂</span><span>Home</span></a>
+    <button id="mobileSearchBtn" type="button" class="min-h-11 grid place-items-center gap-1 hover:text-jade"><span aria-hidden="true">⌕</span><span>Search</span></button>
+    <a href="{% url 'shop:wishlist' %}" class="min-h-11 grid place-items-center gap-1 hover:text-jade"><span aria-hidden="true">♡</span><span>Wishlist</span></a>
+    <a href="{% url 'shop:cart' %}" class="min-h-11 grid place-items-center gap-1 hover:text-jade"><span aria-hidden="true">▢</span><span>Bag</span></a>
+    <a href="{% if user.is_authenticated %}{% url 'shop:account' %}{% else %}{% url 'shop:login' %}{% endif %}" class="min-h-11 grid place-items-center gap-1 hover:text-jade"><span aria-hidden="true">◯</span><span>Account</span></a>
+  </nav>
   {% endif %}
 
   <button id="installApp" type="button" hidden
@@ -221,6 +231,8 @@
       sb.setAttribute('aria-expanded', open);
       if (open) document.getElementById('searchInput').focus();
     };
+    const mobileSearch = document.getElementById('mobileSearchBtn');
+    if (mobileSearch && sb) mobileSearch.onclick = () => sb.click();
     // fade-up on scroll
     const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:0.12});
     document.querySelectorAll('.fade-up').forEach(el=>io.observe(el));

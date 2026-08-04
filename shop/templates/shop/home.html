@@ -32,6 +32,13 @@
   </div>
 </section>
 
+<section id="pwaInstallHelp" class="max-w-7xl mx-auto px-6 lg:px-10 pt-8">
+  <div class="relative border border-champagne-deep bg-champagne/60 px-5 py-4 pr-12 text-sm text-ink/75">
+    <button id="dismissInstallHelp" type="button" aria-label="Dismiss install help" class="absolute top-3 right-4 text-xl text-ink/50 hover:text-jade">×</button>
+    <strong class="text-jade">Keep Méiyì on your phone.</strong> Android: tap <em>Install Méiyì app</em>. iPhone: Safari Share → <em>Add to Home Screen</em>.
+  </div>
+</section>
+
 <!-- ============ COLLECTIONS (asymmetric editorial grid) ============ -->
 <section id="collections" class="max-w-7xl mx-auto px-6 lg:px-10 py-24">
   <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-14 fade-up gap-4">
@@ -131,6 +138,12 @@
 
 {% block scripts %}
 <script>
+  const installHelp = document.getElementById('pwaInstallHelp');
+  if (installHelp && localStorage.getItem('meiyi-install-help-dismissed')) installHelp.hidden = true;
+  document.getElementById('dismissInstallHelp')?.addEventListener('click', () => {
+    localStorage.setItem('meiyi-install-help-dismissed', 'true');
+    installHelp.hidden = true;
+  });
   const carousel = document.getElementById('carousel');
   if (carousel) {
     const step = () => { const c = carousel.querySelector('.product-card'); return c ? c.offsetWidth + 24 : 300; };
