@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .env
+.worktrees/
 
 # Local data — never push your test database or uploads
 db.sqlite3
