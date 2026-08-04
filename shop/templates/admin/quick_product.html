@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .quick-product { max-width: 1000px; margin: 0 auto; }
+  .quick-product__intro { color: #4b5563; margin: 0 0 22px; }
+  .quick-product__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .quick-product__field { min-width: 0; }
+  .quick-product__field--wide { grid-column: 1 / -1; }
+  .quick-product label { display: block; font-weight: 700; margin-bottom: 7px; }
+  .quick-product input:not([type=checkbox]), .quick-product select, .quick-product textarea {
+    box-sizing: border-box; width: 100%; padding: 11px 12px; border: 1px solid #b9b9b9; border-radius: 4px; background: #fff; font-size: 16px;
+  }
+  .quick-product input[type=file] { width: 100%; padding: 12px; background: #fff; border: 1px dashed #1F4A40; border-radius: 4px; box-sizing: border-box; }
+  .quick-product__checkbox { display: flex; gap: 9px; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; background: #fff; }
+  .quick-product__checkbox label { margin: 0; }
+  .quick-product__help { color: #64748b; font-size: 12px; margin: 7px 0 0; }
+  .quick-product .errorlist { margin: 7px 0 0; color: #b91c1c; font-weight: 700; }
+  .quick-product__previews { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .quick-product__previews img { width: 82px; height: 104px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+  .quick-product__actions { display: flex; gap: 12px; margin-top: 25px; }
+  .quick-product__actions input, .quick-product__actions a { min-height: 46px; padding: 0 20px; display: inline-flex; align-items: center; box-sizing: border-box; }
+  @media (max-width: 600px) { .quick-product__grid { grid-template-columns: 1fr; } .quick-product__field--wide { grid-column: auto; } .quick-product__actions { flex-direction: column; } .quick-product__actions input, .quick-product__actions a { justify-content: center; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="quick-product">
+  <h1>Quick Add Product</h1>
+  <p class="quick-product__intro">Add a cheongsam from your phone or laptop. The first photo is the cover; the rest become the gallery.</p>
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+    <div class="quick-product__grid">
+      {% for field in form %}
+      <div class="quick-product__field {% if field.name == 'description' or field.name == 'photos' %}quick-product__field--wide{% endif %}{% if field.field.widget.input_type == 'checkbox' %} quick-product__checkbox{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          {{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% else %}
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+        {% endif %}
+        {% if field.name == 'photos' %}<p class="quick-product__help">JPG, PNG, or WebP. You can choose more than one photo.</p><div id="photoPreviews" class="quick-product__previews" aria-live="polite"></div>{% endif %}
+        {{ field.errors }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="quick-product__actions">
+      <input type="submit" value="Save Product" class="default">
+      <a class="button" href="{% url 'admin:shop_product_changelist' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const picker = document.getElementById('id_photos');
+  const previews = document.getElementById('photoPreviews');
+  if (!picker || !previews) return;
+  picker.addEventListener('change', function () {
+    previews.innerHTML = '';
+    Array.from(picker.files).forEach(function (file) {
+      if (!file.type.startsWith('image/')) return;
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(file);
+      image.alt = file.name;
+      previews.appendChild(image);
+    });
+  });
+});
+</script>
+{% endblock %}

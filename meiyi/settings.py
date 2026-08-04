@@ -149,13 +149,19 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'        # collectstatic target (for deploy)
-STATICFILES_DIRS = [BASE_DIR / 'shop' / 'static']
+# shop/static/ is discovered automatically because the shop app is installed.
 
 # WhiteNoise: compress + cache static files when DEBUG is off (deploy)
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
+
+# Render's local disk is temporary. On the live site, setting CLOUDINARY_URL
+# sends every new ImageField upload to Cloudinary instead. Local development
+# keeps using the media/ folder, so no account or secret is needed locally.
+if os.environ.get('CLOUDINARY_URL'):
+    STORAGES['default'] = {'BACKEND': 'shop.storages.CloudinaryMediaStorage'}
 
 # Media files (product photos uploaded via the admin panel)
 MEDIA_URL = 'media/'

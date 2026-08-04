@@ -13,6 +13,7 @@
 
 {% block content %}
 <div id="content-main">
+  <p class="quick-add-link"><a class="button" href="{% url 'quick_product' %}">Quick Add Product</a></p>
   {% meiyi_dashboard %}
   {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
 </div>

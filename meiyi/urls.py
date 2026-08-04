@@ -15,7 +15,10 @@ sitemaps = {
 }
 
 urlpatterns = [
+    path('service-worker.js', shop_views.service_worker, name='service_worker'),
     # The admin path can be moved via the ADMIN_URL env var (see settings.py).
+    path(f'{settings.ADMIN_URL}quick-product/', shop_views.quick_product,
+         name='quick_product'),
     path(settings.ADMIN_URL, admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', shop_views.robots_txt, name='robots'),

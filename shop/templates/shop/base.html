@@ -7,6 +7,12 @@
   <title>{% block title %}Méiyì · Women's Modern Cheongsam, Made in Malaysia{% endblock %}</title>
   <meta name="description" content="{% block meta_desc %}Women's modern cheongsam, designed and tailored in Malaysia. Heritage silhouettes made for the way she lives today.{% endblock %}" />
   <link rel="icon" type="image/svg+xml" href="{% static 'shop/favicon.svg' %}" />
+  <link rel="manifest" href="{% static 'shop/manifest.webmanifest' %}" />
+  <meta name="theme-color" content="#1F4A40" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Méiyì" />
+  <link rel="apple-touch-icon" href="{% static 'shop/icons/icon-192.png' %}" />
   <!-- social sharing preview (WhatsApp / Facebook) -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Méiyì" />
@@ -197,6 +203,11 @@
   </a>
   {% endif %}
 
+  <button id="installApp" type="button" hidden
+          class="fixed bottom-4 left-4 z-40 bg-jade text-champagne px-4 py-3 text-xs tracking-wider uppercase shadow-lg hover:bg-jade-light">
+    Install Méiyì app
+  </button>
+
   <script>
     // mobile menu
     const mb = document.getElementById('menuBtn');
@@ -317,6 +328,30 @@
         .catch(()=>showToast('Sorry, could not add. Please try again.', false))
         .finally(()=>{ if(btn){ btn.disabled = false; btn.textContent = label; } });
     });
+
+    // Installable PWA: works on HTTPS (Render) and local development.
+    let deferredInstallPrompt;
+    const installApp = document.getElementById('installApp');
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      if (installApp) installApp.hidden = false;
+    });
+    if (installApp) installApp.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installApp.hidden = true;
+    });
+    window.addEventListener('appinstalled', () => {
+      if (installApp) installApp.hidden = true;
+    });
+    const canUseServiceWorker = location.protocol === 'https:' ||
+      location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if ('serviceWorker' in navigator && canUseServiceWorker) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
+    }
   </script>
   {% block scripts %}{% endblock %}
 </body>

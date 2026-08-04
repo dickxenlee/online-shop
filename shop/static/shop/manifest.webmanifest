@@ -1,0 +1,24 @@
+{
+  "name": "Méiyì",
+  "short_name": "Méiyì",
+  "description": "Women's modern cheongsam, made in Malaysia.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#EFE6D9",
+  "theme_color": "#1F4A40",
+  "icons": [
+    {
+      "src": "/static/shop/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/shop/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

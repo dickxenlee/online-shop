@@ -2,7 +2,8 @@ from decimal import Decimal
 from urllib.parse import urlencode
 
 from django.conf import settings
-from django.contrib import messages
+from django.contrib import admin, messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,19 +11,20 @@ from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.core.validators import validate_email
+from django.db import transaction
 from django.db.models import Avg, Count, F, Q
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from . import payments
 from .cart import Cart
 from .emails import send_order_confirmation, send_order_received
-from .forms import CheckoutForm, RegisterForm
+from .forms import CheckoutForm, QuickProductForm, RegisterForm
 from .models import (Category, Coupon, Product, Order, OrderItem,
-                     Review, StockAlert, Subscriber, WishlistItem)
+                     ProductImage, Review, StockAlert, Subscriber, WishlistItem)
 
 
 def _safe_next(request):
@@ -31,6 +33,34 @@ def _safe_next(request):
     if nxt and url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
         return nxt
     return None
+
+
+@staff_member_required
+def quick_product(request):
+    form = QuickProductForm(request.POST or None, request.FILES or None)
+    if request.method == 'POST' and form.is_valid():
+        photos = form.cleaned_data['photos']
+        with transaction.atomic():
+            product = form.save(commit=False)
+            product.image = photos[0]
+            product.save()
+            for photo in photos[1:]:
+                ProductImage.objects.create(product=product, image=photo)
+        messages.success(request, f'“{product.name}” was added successfully.')
+        return redirect('admin:shop_product_change', product.pk)
+
+    context = admin.site.each_context(request)
+    context['form'] = form
+    return render(request, 'admin/quick_product.html', context)
+
+
+@require_GET
+def service_worker(request):
+    response = render(request, 'shop/service-worker.js',
+                      content_type='application/javascript')
+    response['Service-Worker-Allowed'] = '/'
+    response['Cache-Control'] = 'no-cache'
+    return response
 
 
 def home(request):

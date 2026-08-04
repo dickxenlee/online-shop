@@ -4,7 +4,7 @@ import re
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from .models import Order
+from .models import Order, Product
 
 
 class CheckoutForm(forms.ModelForm):
@@ -62,3 +62,49 @@ class RegisterForm(forms.Form):
         if p1 and p2 and p1 != p2:
             self.add_error('password2', "The two passwords do not match.")
         return data
+
+
+class MultiplePhotoInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultiplePhotoField(forms.ImageField):
+    """Validate every file chosen in the quick-add photo picker."""
+
+    allowed_types = {'image/jpeg', 'image/png', 'image/webp'}
+    maximum_size = 10 * 1024 * 1024
+
+    def clean(self, data, initial=None):
+        if not data:
+            raise forms.ValidationError('Add at least one photo.')
+
+        photos = data if isinstance(data, (list, tuple)) else [data]
+        cleaned = []
+        for photo in photos:
+            if photo.content_type not in self.allowed_types:
+                raise forms.ValidationError(
+                    'Only JPG, PNG, and WebP photos are allowed.')
+            if photo.size > self.maximum_size:
+                raise forms.ValidationError('Each photo must be 10 MB or smaller.')
+            cleaned.append(super().clean(photo, initial))
+        return cleaned
+
+
+class QuickProductForm(forms.ModelForm):
+    photos = MultiplePhotoField(
+        widget=MultiplePhotoInput(attrs={
+            'accept': 'image/jpeg,image/png,image/webp', 'multiple': True,
+        }))
+
+    class Meta:
+        model = Product
+        fields = ['name', 'category', 'price', 'compare_at_price', 'description',
+                  'sizes', 'stock', 'is_bestseller', 'is_active']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 5}),
+            'sizes': forms.TextInput(attrs={'placeholder': 'XS, S, M, L'}),
+            'price': forms.NumberInput(attrs={'step': '0.01', 'min': '0'}),
+            'compare_at_price': forms.NumberInput(
+                attrs={'step': '0.01', 'min': '0'}),
+            'stock': forms.NumberInput(attrs={'min': '0'}),
+        }

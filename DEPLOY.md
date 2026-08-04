@@ -89,13 +89,30 @@ This admin login is separate from your computer's one.
 Now open `https://your-address.onrender.com` — your shop is live on the
 internet. Send the link to a friend to test. 🌸
 
+### 3e. Keep product photos safe — Cloudinary (5 min)
+
+Render deletes files uploaded to its local disk during a new deployment.
+Connect the free Cloudinary image service before you upload real product
+photos:
+
+1. Create a free account at https://cloudinary.com.
+2. In the Cloudinary dashboard, open **API Keys** and copy **Environment
+   variable**. It starts with `CLOUDINARY_URL=cloudinary://`.
+3. In Render → your service → **Environment**, add:
+   - Key: `CLOUDINARY_URL`
+   - Value: paste only the value after the `=` sign.
+4. Save changes. Render redeploys automatically.
+5. Open your admin dashboard → **Quick Add Product**. Choose one or more
+   photos. The first photo is the cover and the others become the gallery.
+
+🔑 `CLOUDINARY_URL` contains a secret. Do not put it in GitHub, screenshots,
+or chat messages. After it is set, Quick Add Product and normal admin image
+uploads stay safe across Render redeployments.
+
 ⚠️ What "free" costs you:
 - The site **sleeps after 15 minutes** with no visitors. The next visitor
   waits ~50 seconds for it to wake up. Fine for testing and first customers.
   Render's cheapest paid plan (~USD 7/month) removes the sleeping.
-- **Uploaded photos are wiped on every deploy.** So for product images,
-  paste an image URL instead of uploading a file (a free Cloudinary or
-  Imgur link works). Fix properly later with Cloudinary.
 - Neon free: 0.5 GB storage — that is tens of thousands of orders. Plenty.
 
 ## Step 4 — 🔑 Real payments (toyyibPay)

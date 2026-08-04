@@ -7,9 +7,14 @@ They use a temporary database — your real data is never touched.
 """
 from datetime import timedelta
 from decimal import Decimal
+from base64 import b64decode
+import json
+from pathlib import Path
 from unittest.mock import patch
 
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.staticfiles import finders
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -495,6 +500,126 @@ class AdminTests(TestCase):
         r = self._run_action('admin:shop_subscriber_changelist', 'export_csv',
                              [sub.pk])
         self.assertIn('fan@example.com', r.content.decode('utf-8'))
+
+
+class QuickProductTests(TestCase):
+    """Staff can use the phone-friendly product form from the admin area."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        self.staff = User.objects.create_superuser(
+            'boutique-owner', 'owner@example.com', 'test-only-password')
+
+    def test_staff_can_open_quick_product_page(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.get('/admin/quick-product/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Méiyì — Store Management')
+
+    def test_non_staff_cannot_open_quick_product_page(self):
+        from django.contrib.auth.models import User
+        customer = User.objects.create_user(
+            'customer', 'customer@example.com', 'test-only-password')
+        self.client.force_login(customer)
+
+        response = self.client.get('/admin/quick-product/')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/admin/login/', response['Location'])
+
+    def test_photo_is_required_when_adding_product(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.post('/admin/quick-product/', {
+            'name': 'Jade Moon Cheongsam',
+            'category': make_category().pk,
+            'price': '269.00',
+            'sizes': 'S,M,L',
+            'stock': 5,
+            'is_active': 'on',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Add at least one photo.')
+        self.assertFalse(Product.objects.filter(name='Jade Moon Cheongsam').exists())
+
+    def _photo(self, name='jade.png'):
+        return SimpleUploadedFile(
+            name,
+            b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='),
+            content_type='image/png')
+
+    def test_invalid_photo_type_creates_no_product(self):
+        self.client.force_login(self.staff)
+        bad_photo = SimpleUploadedFile(
+            'not-a-photo.txt', b'not an image', content_type='text/plain')
+
+        response = self.client.post('/admin/quick-product/', {
+            'name': 'Jade Moon Cheongsam',
+            'category': make_category().pk,
+            'price': '269.00',
+            'sizes': 'S,M,L',
+            'stock': 5,
+            'is_active': 'on',
+            'photos': bad_photo,
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Only JPG, PNG, and WebP photos are allowed.')
+        self.assertFalse(Product.objects.filter(name='Jade Moon Cheongsam').exists())
+
+    def test_staff_can_add_product_with_gallery_photos(self):
+        self.client.force_login(self.staff)
+        category = make_category()
+
+        response = self.client.post('/admin/quick-product/', {
+            'name': 'Jade Moon Cheongsam',
+            'category': category.pk,
+            'price': '269.00',
+            'compare_at_price': '319.00',
+            'description': 'A modern jade cheongsam.',
+            'sizes': 'S,M,L',
+            'stock': 5,
+            'is_bestseller': 'on',
+            'is_active': 'on',
+            'photos': [self._photo('cover.png'), self._photo('back.png'),
+                       self._photo('detail.png'), self._photo('closeup.png')],
+        })
+
+        product = Product.objects.get(name='Jade Moon Cheongsam')
+        self.assertRedirects(
+            response, reverse('admin:shop_product_change', args=[product.pk]))
+        self.assertTrue(product.image.name.startswith('products/'))
+        self.assertEqual(product.gallery.count(), 3)
+
+
+class PwaTests(TestCase):
+    def test_manifest_describes_the_installable_meiyi_app(self):
+        manifest_path = finders.find('shop/manifest.webmanifest')
+        if manifest_path is None:
+            self.fail('The PWA manifest is missing from the static files.')
+
+        manifest = json.loads(Path(manifest_path).read_text(encoding='utf-8'))
+
+        self.assertEqual(manifest['name'], 'Méiyì')
+        self.assertEqual(manifest['display'], 'standalone')
+        self.assertEqual(manifest['start_url'], '/')
+        self.assertEqual(manifest['scope'], '/')
+        self.assertEqual(len(manifest['icons']), 2)
+
+    def test_service_worker_is_root_scoped_and_excludes_private_pages(self):
+        response = self.client.get('/service-worker.js')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/javascript', response['Content-Type'])
+        self.assertEqual(response['Service-Worker-Allowed'], '/')
+        body = response.content.decode('utf-8')
+        for private_path in ('/admin/', '/account/', '/checkout/', '/order/',
+                             '/payment/', '/login/', '/logout/',
+                             '/password-reset/'):
+            self.assertIn(private_path, body)
 
 
 class CustomerAccountTests(TestCase):
