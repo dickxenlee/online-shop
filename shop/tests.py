@@ -15,6 +15,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.staticfiles import finders
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -760,3 +761,27 @@ class CancelOrderTests(TestCase):
         self.client.post(reverse('shop:order_cancel', args=[order.token]))
         order.refresh_from_db()
         self.assertEqual(order.status, 'paid')
+
+
+class NavigationAndSecurityTests(TestCase):
+    def test_mobile_navigation_has_large_named_icon_targets(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'id="mobileBottomNav"')
+        self.assertContains(response, 'aria-label="Home"')
+        self.assertContains(response, 'aria-label="Search"')
+        self.assertContains(response, 'min-h-12')
+        self.assertContains(response, 'w-6 h-6')
+
+    def test_base_does_not_hide_images_when_javascript_is_unavailable(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertNotContains(response, 'img{opacity:0')
+
+    def test_security_headers_use_strict_production_defaults(self):
+        self.assertEqual(settings.X_FRAME_OPTIONS, 'DENY')
+        self.assertEqual(settings.SECURE_REFERRER_POLICY,
+                         'strict-origin-when-cross-origin')
+
+    def test_home_uses_the_local_tailwind_build(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'shop/tailwind')
+        self.assertNotContains(response, 'cdn.tailwindcss.com')

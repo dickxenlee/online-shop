@@ -50,6 +50,13 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30   # 30 days; raise once stable
 
+# Safe browser defaults for both local and live environments. These prevent
+# the shop/admin from being framed, reduce unnecessary referrer data, and
+# stop browsers from guessing a file's content type.
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 
 # Application definition
 
