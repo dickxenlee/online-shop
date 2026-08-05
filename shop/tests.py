@@ -786,6 +786,10 @@ class NavigationAndSecurityTests(TestCase):
         self.assertContains(response, 'shop/tailwind')
         self.assertNotContains(response, 'cdn.tailwindcss.com')
 
+    def test_home_uses_compiled_nav_spacing_and_new_app_icon(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'app-icon')
+
     def test_desktop_navigation_groups_brand_and_links_in_one_row(self):
         response = self.client.get(reverse('shop:home'))
         self.assertContains(response, 'id="desktopNav"')
