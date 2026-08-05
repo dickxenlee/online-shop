@@ -785,3 +785,41 @@ class NavigationAndSecurityTests(TestCase):
         response = self.client.get(reverse('shop:home'))
         self.assertContains(response, 'shop/tailwind')
         self.assertNotContains(response, 'cdn.tailwindcss.com')
+
+    def test_desktop_navigation_groups_brand_and_links_in_one_row(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'id="desktopNav"')
+        self.assertContains(response, 'desktop-brand-links')
+
+    def test_install_button_is_visible_without_browser_prompt(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertNotContains(response, 'id="installApp" type="button" hidden')
+        self.assertContains(response, 'Add to Home Screen')
+
+
+class StaffLoginTests(TestCase):
+    def test_staff_login_page_is_available_from_customer_login(self):
+        response = self.client.get(reverse('shop:login'))
+        self.assertContains(response, 'Admin sign in')
+        self.assertContains(response, reverse('shop:staff_login'))
+
+    def test_staff_can_login_and_go_to_admin(self):
+        from django.contrib.auth.models import User
+        User.objects.create_user(username='owner@example.com',
+                                 password='test-owner-password', is_staff=True)
+        response = self.client.post(reverse('shop:staff_login'), {
+            'username': 'owner@example.com',
+            'password': 'test-owner-password',
+        })
+        self.assertRedirects(response, reverse('admin:index'))
+
+    def test_customer_cannot_use_staff_login(self):
+        from django.contrib.auth.models import User
+        User.objects.create_user(username='customer@example.com',
+                                 password='test-customer-password')
+        response = self.client.post(reverse('shop:staff_login'), {
+            'username': 'customer@example.com',
+            'password': 'test-customer-password',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Staff access is required')

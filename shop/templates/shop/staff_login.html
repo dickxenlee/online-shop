@@ -1,0 +1,32 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Admin Sign In · Méiyì{% endblock %}
+
+{% block content %}
+<section class="max-w-md mx-auto px-6 py-20">
+  <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3 text-center">Méiyì staff</p>
+  <h1 class="font-serif text-4xl text-ink mb-8 text-center">Admin sign in</h1>
+
+  {% if form.errors %}
+  <p class="text-maroon text-sm mb-5 text-center bg-maroon/5 border border-maroon/20 rounded-sm px-4 py-3">
+    {% for error in form.non_field_errors %}{{ error }}{% empty %}Email or password is not right — please try again.{% endfor %}
+  </p>
+  {% endif %}
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next|default:'' }}">
+    <div>
+      <label class="block text-[12px] tracking-wider uppercase text-ink/60 mb-1">Admin email or username</label>
+      <input type="text" name="username" value="{{ form.username.value|default:'' }}" required autofocus class="w-full border border-ink/25 px-4 py-3 focus:border-jade outline-none bg-white">
+    </div>
+    <div>
+      <label class="block text-[12px] tracking-wider uppercase text-ink/60 mb-1">Password</label>
+      <input type="password" name="password" required class="w-full border border-ink/25 px-4 py-3 focus:border-jade outline-none bg-white">
+    </div>
+    <button type="submit" class="w-full bg-jade text-champagne py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Sign in to admin</button>
+  </form>
+
+  <p class="text-center text-sm text-ink/60 mt-6"><a href="{% url 'shop:login' %}" class="text-jade underline">Back to customer login</a></p>
+</section>
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
     path('track/', views.track, name='track'),
     path('register/', views.register, name='register'),
     path('login/', views.MeiyiLoginView.as_view(), name='login'),
+    path('staff-login/', views.StaffLoginView.as_view(), name='staff_login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('account/', views.account, name='account'),
     path('password-reset/', auth_views.PasswordResetView.as_view(

@@ -6,6 +6,7 @@ from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
@@ -562,6 +563,19 @@ class MeiyiLoginView(LoginView):
         response = super().form_valid(form)
         _merge_session_wishlist(self.request, self.request.user)
         return response
+
+
+class StaffAuthenticationForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        super().confirm_login_allowed(user)
+        if not user.is_staff:
+            raise ValidationError('Staff access is required.')
+
+
+class StaffLoginView(LoginView):
+    template_name = 'shop/staff_login.html'
+    authentication_form = StaffAuthenticationForm
+    next_page = 'admin:index'
 
 
 @login_required
