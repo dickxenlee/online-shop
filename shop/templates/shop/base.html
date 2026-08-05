@@ -69,17 +69,17 @@
   </div>
 
   <header class="sticky top-0 z-40 backdrop-blur bg-[#FBF8F4]/85 border-b border-champagne-deep/60">
-    <nav id="desktopNav" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative flex items-center h-20">
+    <nav id="desktopNav" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 relative flex items-center justify-between gap-8 h-20">
       <button id="menuBtn" class="md:hidden w-12 h-12 grid place-items-center text-ink hover:text-jade transition-colors" aria-label="Menu">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
-      <div class="desktop-brand-links hidden md:flex items-center gap-5 whitespace-nowrap">
+      <div class="desktop-brand-links hidden md:flex items-center gap-7 shrink-0 whitespace-nowrap">
         <a href="{% url 'shop:home' %}" aria-label="Méiyì home" class="text-center leading-none">
           <svg width="18" height="18" viewBox="0 0 100 100" class="mx-auto mb-1" aria-hidden="true"><path d="M50 78C47 63 39 51 28 43C27 57 34 68 50 78Z" fill="#1F4A40"/><path d="M50 78C53 63 61 51 72 43C73 57 66 68 50 78Z" fill="#1F4A40" opacity=".78"/><path d="M50 78C43 61 43 42 50 24C57 42 57 61 50 78Z" fill="#1F4A40"/><path d="M50 38C47 49 47 60 50 69" fill="none" stroke="#EFE6D9" stroke-width="3.5" stroke-linecap="round"/><path d="M25 78C38 84 62 84 75 78" fill="none" stroke="#1F4A40" stroke-width="4" stroke-linecap="round"/></svg>
           <span class="font-serif text-2xl tracking-[0.2em] text-jade">MÉIYÌ</span>
           <span class="block text-[9px] tracking-[0.4em] text-ink/50 mt-0.5">WOMEN'S CHEONGSAM</span>
         </a>
-        <ul class="hidden md:flex items-center gap-5 text-[13px] tracking-wide text-ink/80">
+        <ul class="hidden md:flex items-center gap-6 text-[13px] tracking-wide text-ink/80">
           <li><a href="{% url 'shop:home' %}#collections" class="hover:text-jade transition-colors">Collections</a></li>
           <li><a href="{% url 'shop:home' %}#bestsellers" class="hover:text-jade transition-colors">Best Sellers</a></li>
           <li><a href="{% url 'shop:home' %}#heritage" class="hover:text-jade transition-colors">Heritage</a></li>
@@ -90,7 +90,7 @@
         <span class="font-serif text-2xl tracking-[0.2em] text-jade">MÉIYÌ</span>
         <span class="block text-[9px] tracking-[0.4em] text-ink/50 mt-0.5">WOMEN'S CHEONGSAM</span>
       </a>
-      <div class="ml-auto flex items-center justify-end gap-1 text-ink/80">
+      <div class="ml-auto flex shrink-0 items-center justify-end gap-2 text-ink/80">
         <button id="searchBtn" aria-label="Search" aria-expanded="false" class="hidden md:grid w-12 h-12 place-items-center hover:text-jade transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
         </button>
