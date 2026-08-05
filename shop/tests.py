@@ -794,7 +794,21 @@ class NavigationAndSecurityTests(TestCase):
     def test_install_button_is_visible_without_browser_prompt(self):
         response = self.client.get(reverse('shop:home'))
         self.assertNotContains(response, 'id="installApp" type="button" hidden')
-        self.assertContains(response, 'Add to Home Screen')
+        self.assertContains(response, '>\n    Install\n  </button>')
+
+    def test_homepage_images_below_hero_are_lazy_loaded(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'loading="lazy"')
+
+
+class AdminHomeLinkTests(TestCase):
+    def test_admin_dashboard_has_view_home_page_link(self):
+        from django.contrib.auth.models import User
+        User.objects.create_superuser(username='admin-home', password='test-admin-password', email='admin-home@example.com')
+        self.client.login(username='admin-home', password='test-admin-password')
+        response = self.client.get(reverse('admin:index'))
+        self.assertContains(response, 'View Home Page')
+        self.assertContains(response, reverse('shop:home'))
 
 
 class StaffLoginTests(TestCase):

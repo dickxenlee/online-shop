@@ -24,8 +24,11 @@
       </div>
     </div>
     <div class="lg:col-span-7 relative order-1 lg:order-2 min-h-[55vh] lg:min-h-full overflow-hidden">
-      <img src="{% static 'shop/meiyi-hero-jade.png' %}"
-           alt="Model in modern emerald cheongsam" class="absolute inset-0 w-full h-full object-cover" />
+      <picture>
+        <source srcset="{% static 'shop/meiyi-hero-jade.jpg' %}" type="image/jpeg">
+        <img src="{% static 'shop/meiyi-hero-jade.png' %}"
+             alt="Model in modern emerald cheongsam" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover" />
+      </picture>
       <div class="absolute inset-0 bg-gradient-to-t from-jade/20 to-transparent"></div>
       <span class="absolute bottom-8 right-8 text-champagne font-serif italic text-lg drop-shadow">No. 01 — The Jade Edit</span>
     </div>
@@ -35,7 +38,7 @@
 <section id="pwaInstallHelp" class="max-w-7xl mx-auto px-6 lg:px-10 pt-8">
   <div class="relative border border-champagne-deep bg-champagne/60 px-5 py-4 pr-12 text-sm text-ink/75">
     <button id="dismissInstallHelp" type="button" aria-label="Dismiss install help" class="absolute top-3 right-4 text-xl text-ink/50 hover:text-jade">×</button>
-    <strong class="text-jade">Keep Méiyì on your phone.</strong> Android: tap <em>Install Méiyì app</em>. iPhone: Safari Share → <em>Add to Home Screen</em>.
+    <strong class="text-jade">Keep Méiyì on your phone.</strong> Android: tap <em>Install</em>. iPhone: Safari Share → <em>Add to Home Screen</em>.
   </div>
 </section>
 
@@ -54,7 +57,7 @@
     <a href="{{ c.get_absolute_url }}"
        class="group relative block overflow-hidden rounded-sm fade-up
        {% cycle 'md:col-span-7 md:row-span-2' 'md:col-span-5' 'md:col-span-5' %}">
-      <img src="{{ c.cover }}" alt="{{ c.name }}"
+      <img src="{{ c.cover }}" alt="{{ c.name }}" loading="lazy" decoding="async"
            class="w-full object-cover transition-transform duration-700 group-hover:scale-105 {% cycle 'h-[300px] md:h-[620px]' 'h-[300px]' 'h-[300px]' %}" />
       <div class="absolute inset-0 bg-gradient-to-t from-ink/65 via-transparent to-transparent"></div>
       <div class="absolute bottom-0 p-7 text-champagne">
@@ -85,8 +88,8 @@
       <div class="product-card snap-start shrink-0 w-[78%] sm:w-[46%] lg:w-[30%] group relative">
         <div class="relative overflow-hidden rounded-sm bg-white">
           <a href="{{ p.get_absolute_url }}" class="block">
-            <img src="{{ p.cover }}" alt="{{ p.name }}" class="img-front h-[420px] w-full object-cover" />
-            <img src="{{ p.hover }}" alt="{{ p.name }}" class="img-back absolute inset-0 h-[420px] w-full object-cover" />
+            <img src="{{ p.cover }}" alt="{{ p.name }}" loading="lazy" decoding="async" class="img-front h-[420px] w-full object-cover" />
+            <img src="{{ p.hover }}" alt="{{ p.name }}" loading="lazy" decoding="async" class="img-back absolute inset-0 h-[420px] w-full object-cover" />
           </a>
           {% if not p.in_stock %}<span class="absolute top-4 left-4 bg-ink/85 text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Sold Out</span>
           {% elif p.is_bestseller %}<span class="absolute top-4 left-4 bg-jade text-champagne text-[10px] tracking-wider uppercase px-3 py-1">Best Seller</span>{% endif %}
@@ -119,7 +122,7 @@
   <div class="grid lg:grid-cols-2 gap-14 items-center">
     <div class="relative fade-up">
       <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=900&q=80"
-           alt="Artisan stitching a cheongsam" class="w-full h-[520px] object-cover rounded-sm" />
+           alt="Artisan stitching a cheongsam" loading="lazy" decoding="async" class="w-full h-[520px] object-cover rounded-sm" />
       <div class="absolute -bottom-6 -right-6 bg-jade text-champagne p-7 hidden sm:block">
         <p class="font-serif text-3xl">40+</p>
         <p class="text-[11px] tracking-wider uppercase opacity-80">hours per gown</p>
