@@ -800,6 +800,7 @@ class NavigationAndSecurityTests(TestCase):
         self.assertContains(response, 'desktop-brand-links')
         self.assertContains(response, 'desktop-brand-links hidden md:flex')
         self.assertContains(response, 'viewBox="0 0 100 100"')
+        self.assertContains(response, 'id="desktopNav" class="w-full')
 
     def test_install_button_is_visible_without_browser_prompt(self):
         response = self.client.get(reverse('shop:home'))
