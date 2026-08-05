@@ -1,5 +1,6 @@
 {% load static %}
-const CACHE_NAME = 'meiyi-public-v1';
+// Bump this when the shell/navbar changes so installed PWAs discard old UI.
+const CACHE_NAME = 'meiyi-public-v2';
 const HOME = '/';
 const OFFLINE = '/offline/';
 const STATIC_ASSETS = [

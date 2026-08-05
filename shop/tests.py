@@ -790,6 +790,10 @@ class NavigationAndSecurityTests(TestCase):
         response = self.client.get(reverse('shop:home'))
         self.assertContains(response, 'app-icon')
 
+    def test_service_worker_uses_current_cache_version(self):
+        response = self.client.get('/service-worker.js')
+        self.assertContains(response, "meiyi-public-v2")
+
     def test_desktop_navigation_groups_brand_and_links_in_one_row(self):
         response = self.client.get(reverse('shop:home'))
         self.assertContains(response, 'id="desktopNav"')
