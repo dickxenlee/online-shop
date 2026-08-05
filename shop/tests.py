@@ -794,6 +794,7 @@ class NavigationAndSecurityTests(TestCase):
         response = self.client.get(reverse('shop:home'))
         self.assertContains(response, 'id="desktopNav"')
         self.assertContains(response, 'desktop-brand-links')
+        self.assertContains(response, 'desktop-brand-links hidden md:flex')
 
     def test_install_button_is_visible_without_browser_prompt(self):
         response = self.client.get(reverse('shop:home'))

@@ -73,7 +73,7 @@
       <button id="menuBtn" class="md:hidden w-12 h-12 grid place-items-center text-ink hover:text-jade transition-colors" aria-label="Menu">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
-      <div class="desktop-brand-links flex items-center gap-8 absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+      <div class="desktop-brand-links hidden md:flex items-center gap-8">
         <a href="{% url 'shop:home' %}" aria-label="Méiyì home" class="text-center leading-none">
           <svg width="16" height="16" viewBox="0 0 64 64" class="mx-auto mb-1" aria-hidden="true"><path d="M32 6C20 20 20 40 32 58 44 40 44 20 32 6Z" fill="#1F4A40"/><path d="M32 17C27.5 26 27.5 40 32 49" stroke="#EFE6D9" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
           <span class="font-serif text-2xl tracking-[0.2em] text-jade">MÉIYÌ</span>
@@ -85,6 +85,11 @@
           <li><a href="{% url 'shop:home' %}#heritage" class="hover:text-jade transition-colors">Heritage</a></li>
         </ul>
       </div>
+      <a href="{% url 'shop:home' %}" aria-label="Méiyì home" class="md:hidden absolute left-1/2 -translate-x-1/2 text-center leading-none">
+        <svg width="16" height="16" viewBox="0 0 64 64" class="mx-auto mb-1" aria-hidden="true"><path d="M32 6C20 20 20 40 32 58 44 40 44 20 32 6Z" fill="#1F4A40"/><path d="M32 17C27.5 26 27.5 40 32 49" stroke="#EFE6D9" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        <span class="font-serif text-2xl tracking-[0.2em] text-jade">MÉIYÌ</span>
+        <span class="block text-[9px] tracking-[0.4em] text-ink/50 mt-0.5">WOMEN'S CHEONGSAM</span>
+      </a>
       <div class="ml-auto flex items-center justify-end gap-1 text-ink/80">
         <button id="searchBtn" aria-label="Search" aria-expanded="false" class="hidden md:grid w-12 h-12 place-items-center hover:text-jade transition-colors">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
