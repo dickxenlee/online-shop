@@ -414,7 +414,7 @@ class ManualPaymentTests(TestCase):
         self.client.post(reverse('shop:cart_add', args=[self.p.id]),
                          {'size': 'M'})
         r = self.client.get(reverse('shop:checkout'))
-        self.assertContains(r, 'Bank Transfer via WhatsApp')
+        self.assertContains(r, 'Pay by DuitNow transfer')
         self.assertNotContains(r, 'Demo checkout')
 
     def test_order_stays_pending_and_instructions_emailed(self):
@@ -433,6 +433,17 @@ class ManualPaymentTests(TestCase):
         self.assertContains(r, 'Payment Pending')
         self.assertContains(r, 'wa.me/')
         self.assertContains(r, 'How to pay')
+
+    @override_settings(
+        PAYMENT_MODE='duitnow',
+        TOYYIBPAY_SECRET_KEY='old-key',
+        TOYYIBPAY_CATEGORY_CODE='old-category',
+    )
+    def test_duitnow_mode_hides_gateway_retry_even_with_old_keys(self):
+        order = self._checkout()
+        r = self.client.get(reverse('shop:order_done', args=[order.token]))
+        self.assertContains(r, 'How to pay — DuitNow')
+        self.assertNotContains(r, 'Pay Now')
 
 
 class AdminTests(TestCase):
@@ -801,6 +812,16 @@ class NavigationAndSecurityTests(TestCase):
         self.assertContains(response, 'desktop-brand-links hidden md:flex')
         self.assertContains(response, 'viewBox="0 0 100 100"')
         self.assertContains(response, 'id="desktopNav" class="w-full')
+
+    def test_admin_dashboard_link_is_only_visible_to_staff(self):
+        response = self.client.get(reverse('shop:home'))
+        self.assertNotContains(response, 'Admin Dashboard')
+        from django.contrib.auth.models import User
+        staff = User.objects.create_user(username='staff-home', password='test-password', is_staff=True)
+        self.client.force_login(staff)
+        response = self.client.get(reverse('shop:home'))
+        self.assertContains(response, 'Admin Dashboard')
+        self.assertContains(response, reverse('admin:index'))
 
     def test_install_button_is_visible_without_browser_prompt(self):
         response = self.client.get(reverse('shop:home'))

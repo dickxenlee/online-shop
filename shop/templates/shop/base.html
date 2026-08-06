@@ -83,6 +83,7 @@
           <li><a href="{% url 'shop:home' %}#collections" class="hover:text-jade transition-colors">Collections</a></li>
           <li><a href="{% url 'shop:home' %}#bestsellers" class="hover:text-jade transition-colors">Best Sellers</a></li>
           <li><a href="{% url 'shop:home' %}#heritage" class="hover:text-jade transition-colors">Heritage</a></li>
+          {% if user.is_staff %}<li><a href="{% url 'admin:index' %}" class="text-maroon hover:text-jade transition-colors">Admin Dashboard</a></li>{% endif %}
         </ul>
       </div>
       <a href="{% url 'shop:home' %}" aria-label="Méiyì home" class="md:hidden absolute left-1/2 -translate-x-1/2 text-center leading-none">
@@ -121,6 +122,7 @@
       <a href="{% url 'shop:home' %}#collections" class="block px-6 py-4 border-b border-champagne-deep/40 text-sm">Collections</a>
       <a href="{% url 'shop:home' %}#bestsellers" class="block px-6 py-4 border-b border-champagne-deep/40 text-sm">Best Sellers</a>
       <a href="{% url 'shop:home' %}#heritage" class="block px-6 py-4 text-sm">Heritage</a>
+      {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="block px-6 py-4 border-t border-champagne-deep/60 text-sm text-maroon">Admin Dashboard</a>{% endif %}
     </div>
   </header>
 

@@ -74,8 +74,9 @@
         {% if manual_payment %}
         <input type="hidden" name="payment_method" value="transfer">
         <div class="border border-jade/40 bg-jade/5 px-5 py-4">
-          <p class="font-medium text-ink mb-1">Bank Transfer via WhatsApp</p>
-          <p class="text-[13px] text-ink/60">Place your order first — your pieces are reserved right away. We'll then send you our bank details on WhatsApp and email, and ship as soon as your transfer arrives.</p>
+          <p class="font-medium text-ink mb-1">Pay by DuitNow transfer</p>
+          {% if DUITNOW_ID %}<p class="text-[13px] text-ink/70 mb-1">DuitNow ID: <strong>{{ DUITNOW_ID }}</strong></p>{% endif %}
+          <p class="text-[13px] text-ink/60">Place your order first — your pieces are reserved right away. We will send the DuitNow payment details by WhatsApp and email, then ship after your transfer is confirmed.</p>
         </div>
         {% else %}
         <div class="space-y-3">

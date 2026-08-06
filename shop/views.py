@@ -292,7 +292,7 @@ def checkout(request):
             cart.remove_coupon()
             cart.clear()
 
-            if payments.enabled():
+            if payments.enabled() and not payments.manual_mode():
                 url, billcode = payments.create_bill(order)
                 if url:
                     order.payment_ref = billcode
@@ -350,6 +350,8 @@ def order_done(request, token):
 def payment_start(request, token):
     """Pay Now (retry) for a pending order — creates a fresh gateway bill."""
     order = get_object_or_404(Order, token=token, status='pending')
+    if payments.manual_mode():
+        return redirect('shop:order_done', token=order.token)
     url, billcode = payments.create_bill(order)
     if url:
         order.payment_ref = billcode

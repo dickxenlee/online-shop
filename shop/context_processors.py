@@ -17,6 +17,7 @@ def cart_summary(request):
         'categories': Category.objects.all(),
         'FREE_SHIPPING_THRESHOLD': settings.FREE_SHIPPING_THRESHOLD,
         'WHATSAPP_NUMBER': settings.WHATSAPP_NUMBER,
+        'DUITNOW_ID': settings.DUITNOW_ID,
         'wishlist_ids': wishlist_ids,
         'wishlist_count': len(wishlist_ids),
     }

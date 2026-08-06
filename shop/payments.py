@@ -15,7 +15,8 @@ def enabled():
 def manual_mode():
     """Bank-transfer mode (no gateway): orders stay Pending, the customer is
     told how to pay on WhatsApp, and the owner marks them PAID in the admin."""
-    return not enabled() and settings.MANUAL_PAYMENT
+    return settings.PAYMENT_MODE in ('duitnow', 'transfer') or (
+        not enabled() and settings.MANUAL_PAYMENT)
 
 
 def create_bill(order):

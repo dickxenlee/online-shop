@@ -10,16 +10,17 @@
   <p class="text-[11px] tracking-luxe uppercase text-maroon mb-3">Almost there, {{ order.full_name }}</p>
   <h1 class="font-serif text-4xl sm:text-5xl text-ink mb-4">Payment Pending</h1>
   <p class="text-ink/70 mb-2">Order <span class="font-medium text-ink">#{{ order.id }}</span> is saved, but payment is not completed yet.</p>
-  {% if payments_enabled %}
+        {% if payments_enabled and not manual_payment %}
   <form method="post" action="{% url 'shop:payment_start' order.token %}" class="mb-10 mt-6">
     {% csrf_token %}
     <button type="submit" class="bg-jade text-champagne px-10 py-4 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">Pay Now — RM {{ order.total|floatformat:2 }}</button>
   </form>
   {% elif manual_payment %}
   <div class="bg-champagne/60 rounded-sm p-6 text-left mt-6 mb-10">
-    <h2 class="font-serif text-xl text-ink mb-2">How to pay — bank transfer</h2>
-    <p class="text-ink/70 text-sm mb-4">Your pieces are reserved. Message us on WhatsApp with your order number <span class="font-medium text-ink">#{{ order.id }}</span> and we'll send you our bank details. We also emailed these steps to {{ order.email }}.</p>
-    <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi%20Meiyi!%20I%20placed%20order%20%23{{ order.id }}%20and%20would%20like%20to%20pay%20by%20bank%20transfer." target="_blank" rel="noopener" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">💬 WhatsApp Us to Pay — RM {{ order.total|floatformat:2 }}</a>
+    <h2 class="font-serif text-xl text-ink mb-2">How to pay — DuitNow</h2>
+    {% if DUITNOW_ID %}<p class="text-ink/70 text-sm mb-2">DuitNow ID: <strong>{{ DUITNOW_ID }}</strong></p>{% endif %}
+    <p class="text-ink/70 text-sm mb-4">Your pieces are reserved. Message us on WhatsApp with your order number <span class="font-medium text-ink">#{{ order.id }}</span> and we will confirm the DuitNow payment details. We also emailed these steps to {{ order.email }}.</p>
+    <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi%20Meiyi!%20I%20placed%20order%20%23{{ order.id }}%20and%20would%20like%20to%20pay%20by%20DuitNow." target="_blank" rel="noopener" class="inline-block bg-jade text-champagne px-8 py-3.5 text-[13px] tracking-wider uppercase hover:bg-jade-light transition-colors">💬 WhatsApp DuitNow Details — RM {{ order.total|floatformat:2 }}</a>
   </div>
   {% else %}
   <p class="text-ink/60 text-sm mb-10">We'll contact you at {{ order.email }} to arrange payment.</p>

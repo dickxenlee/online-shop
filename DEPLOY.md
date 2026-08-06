@@ -115,17 +115,24 @@ uploads stay safe across Render redeployments.
   Render's cheapest paid plan (~USD 7/month) removes the sleeping.
 - Neon free: 0.5 GB storage — that is tens of thousands of orders. Plenty.
 
-## Step 4 — 🔑 Real payments (toyyibPay)
+## Step 4 — 🔑 Receive payments by DuitNow transfer
 
-**No toyyibPay yet? You can already sell!** On the live site (DEBUG=false),
-when no gateway keys are set, **bank-transfer mode** turns on by itself:
+The live site uses **DuitNow transfer by default**. The customer places the
+order first, then pays using the DuitNow details you provide:
 - The customer places the order → it stays **Pending** (stock is reserved)
 - She gets an email + a WhatsApp button with your order number
-- She transfers the money to your bank, you check your bank app
+- She transfers the money to your DuitNow account, you check your bank app
 - In the admin, select the order → action **"Mark as PAID + email receipt"**
 - Then **"Mark as SHIPPED"** when you post it. That's a real business already.
 
-When you're ready for automatic FPX/card payments:
+In Render → your service → **Environment**, add:
+
+- `PAYMENT_MODE` = `duitnow`
+- `DUITNOW_ID` = your DuitNow phone number, business registration number, or
+  other DuitNow ID
+- `WHATSAPP_NUMBER` = your real WhatsApp number, including country code
+
+When you're ready for automatic FPX/card payments in the future:
 
 1. Practice first on the sandbox: https://dev.toyyibpay.com — register,
    create a **Category**, copy the **Secret Key** and **Category Code**.
@@ -164,8 +171,9 @@ Easiest: a Gmail account + App Password (Google Account → Security →
   `ADMIN_URL` = a secret path like `manage-meiyi-x7k2/` — then your admin is
   at `https://your-site/manage-meiyi-x7k2/` and bots that try `/admin/`
   just get a 404. Don't tell anyone the path.
-- Payments are double-checked with toyyibPay's own servers before an order
-  is ever marked paid — a fake "payment done" message can't fool the shop.
+- In DuitNow mode, the owner manually confirms the transfer in the bank app
+  before using the admin action to mark an order paid. If toyyibPay is enabled
+  later, its payment callback is checked with toyyibPay's own servers.
 
 ## Money & legal (Malaysia)
 

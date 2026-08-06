@@ -50,7 +50,7 @@ def send_order_received(order):
         f"Thank you! We received your order #{order.id} and reserved your pieces.",
         "It will ship as soon as your payment is confirmed.",
         "",
-        "HOW TO PAY (bank transfer):",
+        "HOW TO PAY (DuitNow transfer):",
         f"WhatsApp us at https://wa.me/{settings.WHATSAPP_NUMBER} with your "
         f"order number #{order.id} and we'll reply with our bank details.",
         "",

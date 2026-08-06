@@ -193,7 +193,13 @@ SHIPPING_EAST = 18                 # MYR, East Malaysia (Sabah & Sarawak)
 # (country code + number, no + or spaces), e.g. '60123456789'.
 WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '60123456789')
 
-# --- Payments (toyyibPay) ---
+# --- Payments ---
+# Live checkout stays on DuitNow transfer until online payments are enabled.
+PAYMENT_MODE = os.environ.get(
+    'PAYMENT_MODE', 'demo' if DEBUG else 'duitnow').lower()
+DUITNOW_ID = os.environ.get('DUITNOW_ID', '')
+
+# Optional toyyibPay settings for a future online-payment switch.
 # Leave the keys empty = demo mode (orders marked paid instantly, no money moves).
 # 1) Register at https://toyyibpay.com (sandbox: https://dev.toyyibpay.com)
 # 2) Create a Category, then set these environment variables:
